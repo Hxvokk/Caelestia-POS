@@ -194,9 +194,17 @@ export function ModelCatalogScreen() {
                   {accountEmail || "Sesión activa"}
                 </Text>
               </View>
-              <Pressable accessibilityRole="button" onPress={() => void signOut()}>
-                <Text style={styles.signOut}>Salir</Text>
-              </Pressable>
+              <View style={styles.accountActions}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => router.push("/profile")}
+                >
+                  <Text style={styles.profileLink}>Mi perfil</Text>
+                </Pressable>
+                <Pressable accessibilityRole="button" onPress={() => void signOut()}>
+                  <Text style={styles.signOut}>Salir</Text>
+                </Pressable>
+              </View>
             </View>
 
             {currentUser?.role === "administrador" ? (
@@ -391,7 +399,9 @@ const styles = StyleSheet.create({
   eyebrow: { color: colors.primary, fontSize: 11, fontWeight: "800", letterSpacing: 1.8 },
   title: { marginTop: 3, color: colors.text, fontSize: 28, fontWeight: "800" },
   account: { marginTop: 4, color: colors.muted, fontSize: 13 },
-  signOut: { color: colors.primary, fontSize: 14, fontWeight: "700" },
+  accountActions: { alignItems: "flex-end", gap: spacing.sm },
+  profileLink: { color: colors.primary, fontSize: 13, fontWeight: "700" },
+  signOut: { color: colors.muted, fontSize: 13, fontWeight: "700" },
   adminButton: {
     alignItems: "center",
     padding: spacing.md,
