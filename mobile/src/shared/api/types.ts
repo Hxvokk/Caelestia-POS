@@ -61,3 +61,10 @@ export type CurrentUser = {
   id: string;
   role: "administrador" | "vendedor";
 };
+
+export type VendorAccount = {
+  id: string;
+  name: string;
+  email: string;
+  isActive: boolean;
+};

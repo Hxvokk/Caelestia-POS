@@ -97,6 +97,7 @@ export function AdminField({
   keyboardType,
   multiline = false,
   editable = true,
+  secureTextEntry = false,
 }: {
   label: string;
   value: string;
@@ -105,6 +106,7 @@ export function AdminField({
   keyboardType?: "default" | "numeric" | "decimal-pad" | "number-pad" | "url";
   multiline?: boolean;
   editable?: boolean;
+  secureTextEntry?: boolean;
 }) {
   return (
     <View style={styles.field}>
@@ -117,6 +119,7 @@ export function AdminField({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={colors.muted}
+        secureTextEntry={secureTextEntry}
         style={[styles.fieldInput, multiline && styles.multilineInput]}
         value={value}
       />
