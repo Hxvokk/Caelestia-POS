@@ -25,10 +25,12 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [x] **RF-01** Iniciar y cerrar sesión con correo y contraseña mediante Supabase Auth en la app.
 - [x] Guardar y restaurar la sesión móvil con almacenamiento seguro.
 - [x] **RF-02** Validar en el backend el JWT, el perfil activo y el rol del usuario.
-- [ ] Crear/verificar en Supabase las cuentas iniciales de administrador y vendedor con sus perfiles activos.
+- [ ] Crear/verificar en Supabase las cuentas iniciales de administrador y vendedor con sus perfiles activos; el administrador inicial se aprovisiona manualmente.
 - [x] Aplicar navegación y opciones de inventario distintas según el rol; la API vuelve a verificar permisos.
-- [ ] **RF-18** Permitir al administrador crear vendedores y activar o desactivar sus cuentas sin borrar su historial.
-- [ ] **RF-19** Permitir al usuario cambiar voluntariamente su contraseña desde el perfil.
+- [x] **RF-18** Permitir al administrador listar y crear vendedores, y activar/desactivar sus cuentas sin borrar su historial.
+- [x] **RF-19** Permitir al usuario cambiar voluntariamente su contraseña desde Mi perfil mediante Supabase Auth.
+- [ ] Configurar `Supabase:ServiceRoleKey` en User Secrets y probar la creación/activación de vendedores en el proyecto Supabase.
+- [ ] Probar el cambio de contraseña desde la app con una cuenta Supabase real.
 
 ### Marcas, modelos y unidades
 
@@ -40,7 +42,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [x] **RF-07** Filtrar por marca, precio, procesador/chip, memoria mínima y disponibilidad.
 - [x] **RF-03–RF-06** Proporcionar pantallas móviles de administración para marcas, modelos y unidades; los permisos se validan también en backend.
 - [ ] **RF-21** Permitir adjuntar un archivo de imagen del dispositivo al crear o editar un modelo.
-- [ ] Probar el catálogo y la administración en Android conectados a Supabase y la API con registros reales.
+- [ ] Probar en Android catálogo, administración de inventario/vendedores y perfil, conectados a Supabase y la API con registros reales.
 - [ ] Verificar en móvil que los datos opcionales no publicados o no aplicables queden sin especificar y no se inventen.
 - [ ] Probar con modelos y números de serie reales y verificados; no usar unidades ficticias.
 
@@ -101,7 +103,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 Comprobaciones ejecutadas el 17-11-2026:
 
 - [x] `npm run typecheck` y `npm run lint` en `mobile/`.
-- [x] `dotnet test CaelestiaPOS.sln` — 15 pruebas aprobadas.
+- [x] `dotnet test CaelestiaPOS.sln` — 29 pruebas aprobadas.
 - [x] `python3 -m unittest discover -s tests` — 2 pruebas aprobadas.
 - [x] `npx expo-doctor` — 20/20 comprobaciones.
 - [x] `npx expo export --platform android`.

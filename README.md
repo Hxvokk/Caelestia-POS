@@ -47,6 +47,7 @@ Abrí la dirección local que aparece en la terminal y agregá `/swagger`. En Sw
 - `GET /health/database` comprueba la conexión con PostgreSQL sin mostrar credenciales.
 - `GET /api/users/me` devuelve el identificador y rol del usuario autenticado para ajustar la navegación móvil.
 - `GET /api/users`, `POST /api/users` y `PATCH /api/users/{id}/status` requieren rol `administrador`; crean vendedores en Supabase Auth y activan o bloquean su acceso sin borrar sus ventas.
+- Desde **Mi perfil**, cualquier usuario autenticado puede cambiar su contraseña actualizando su cuenta en Supabase Auth.
 - `GET /api/brands` consulta marcas con sesión; `POST`, `PUT` y `DELETE /api/brands` requieren rol `administrador` y respetan las relaciones con modelos.
 - `/api/laptops` permite consultar, filtrar, registrar, modificar y eliminar modelos sin unidades asociadas.
 - `/api/units` permite consultar, registrar, modificar y eliminar unidades por número de serie; las unidades vendidas o con historial no se pueden modificar ni eliminar.
