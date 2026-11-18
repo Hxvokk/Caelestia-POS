@@ -27,6 +27,8 @@ public sealed class AppDbContextModelTests
         Assert.Equal("pagos", payment.GetTableName());
         Assert.Equal("es_simulado", payment.FindProperty(nameof(SalePayment.IsSimulated))!.GetColumnName());
         Assert.Equal("usuarios", user.GetTableName());
+        Assert.Equal("nombre", user.FindProperty(nameof(UserProfile.Name))!.GetColumnName());
+        Assert.Equal("correo", user.FindProperty(nameof(UserProfile.Email))!.GetColumnName());
         Assert.Equal("activo", user.FindProperty(nameof(UserProfile.IsActive))!.GetColumnName());
     }
 }

@@ -2,6 +2,8 @@ using Api.Data;
 using Api.Modules.Inventory.Models;
 using Api.Modules.Inventory.Repositories;
 using Api.Modules.Inventory.Services;
+using Api.Modules.Users.Repositories;
+using Api.Modules.Users.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -121,6 +123,9 @@ builder.Services.AddScoped<ILaptopModelRepository, LaptopModelRepository>();
 builder.Services.AddScoped<ILaptopModelService, LaptopModelService>();
 builder.Services.AddScoped<ILaptopUnitRepository, LaptopUnitRepository>();
 builder.Services.AddScoped<ILaptopUnitService, LaptopUnitService>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+builder.Services.AddScoped<IVendorService, VendorService>();
+builder.Services.AddHttpClient<ISupabaseAuthAdminClient, SupabaseAuthAdminClient>();
 
 var app = builder.Build();
 

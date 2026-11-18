@@ -38,8 +38,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.ToTable("usuarios");
             entity.HasKey(user => user.Id);
             entity.Property(user => user.Id).HasColumnName("id");
+            entity.Property(user => user.Name).HasColumnName("nombre").HasMaxLength(100).IsRequired();
+            entity.Property(user => user.Email).HasColumnName("correo").HasMaxLength(150).IsRequired();
             entity.Property(user => user.Role).HasColumnName("rol").HasMaxLength(20).IsRequired();
             entity.Property(user => user.IsActive).HasColumnName("activo").IsRequired();
+            entity.HasIndex(user => user.Email).IsUnique();
         });
 
         modelBuilder.Entity<LaptopModel>(entity =>
