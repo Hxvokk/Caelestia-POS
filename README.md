@@ -25,6 +25,13 @@ Requisitos: .NET SDK 11.
    ```
 
    Reemplaza `PROJECT_REF` con el identificador de tu proyecto. La API verifica la firma del JWT mediante OpenID Connect/JWKS y consulta `usuarios` para validar que el perfil esté activo y tomar su rol.
+4. Para que el administrador gestione vendedores, guarda una clave secreta de servidor en User Secrets:
+
+   ```sh
+   dotnet user-secrets set "Supabase:ServiceRoleKey" "TU_SECRET_KEY_DE_SUPABASE"
+   ```
+
+   Usá la secret/service-role key del proyecto solo en el backend local. Nunca la pongas en `mobile/`, `.env.local`, código fuente o Git. Sin esta configuración, los endpoints administrativos de usuarios responden `503`.
 
 ### Ejecutar y comprobar
 
@@ -39,6 +46,7 @@ Abrí la dirección local que aparece en la terminal y agregá `/swagger`. En Sw
 - `GET /health` comprueba que la API está activa.
 - `GET /health/database` comprueba la conexión con PostgreSQL sin mostrar credenciales.
 - `GET /api/users/me` devuelve el identificador y rol del usuario autenticado para ajustar la navegación móvil.
+- `GET /api/users`, `POST /api/users` y `PATCH /api/users/{id}/status` requieren rol `administrador`; crean vendedores en Supabase Auth y activan o bloquean su acceso sin borrar sus ventas.
 - `GET /api/brands` consulta marcas con sesión; `POST`, `PUT` y `DELETE /api/brands` requieren rol `administrador` y respetan las relaciones con modelos.
 - `/api/laptops` permite consultar, filtrar, registrar, modificar y eliminar modelos sin unidades asociadas.
 - `/api/units` permite consultar, registrar, modificar y eliminar unidades por número de serie; las unidades vendidas o con historial no se pueden modificar ni eliminar.
@@ -46,7 +54,7 @@ Abrí la dirección local que aparece en la terminal y agregá `/swagger`. En Sw
 
 El cliente móvil consume `/api/laptops` y `/api/units` después de iniciar sesión. El catálogo muestra la foto, marca, SKU, precio y especificaciones disponibles cuando esos datos existen.
 
-Las consultas del catálogo requieren sesión. Las escrituras de marcas, modelos y unidades requieren rol `administrador`; las consultas de unidades y el registro de ventas aceptan `administrador` o `vendedor`. Antes de iniciar sesión en la app, crea el usuario en Supabase Auth y un perfil activo en `usuarios` con el mismo UUID y rol `administrador` o `vendedor`.
+Las consultas del catálogo requieren sesión. Las escrituras de marcas, modelos y unidades requieren rol `administrador`; las consultas de unidades y el registro de ventas aceptan `administrador` o `vendedor`. El perfil del administrador inicial se aprovisiona manualmente en Supabase Auth y `usuarios`; después, el administrador puede crear vendedores desde la app.
 
 Las ventas y pagos de esta primera versión son simulados; no se conecta una pasarela de pago. Ejecuta el backend solo en desarrollo local mientras no se configure y verifique la autenticación del cliente.
 
