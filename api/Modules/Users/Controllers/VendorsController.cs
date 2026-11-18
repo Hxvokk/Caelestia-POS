@@ -74,7 +74,10 @@ public sealed class VendorsController(IVendorService vendorService) : Controller
     {
         try
         {
-            var updated = await vendorService.SetActiveAsync(id, request.IsActive, cancellationToken);
+            var updated = await vendorService.SetActiveAsync(
+                id,
+                request.IsActive!.Value,
+                cancellationToken);
             return updated
                 ? NoContent()
                 : NotFound(CreateProblem("No se encontró la cuenta de vendedor.", StatusCodes.Status404NotFound));

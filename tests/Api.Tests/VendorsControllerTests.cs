@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Api.Modules.Users.Contracts;
 using Api.Modules.Users.Controllers;
@@ -50,6 +51,22 @@ public sealed class VendorsControllerTests
             CancellationToken.None);
 
         Assert.IsType<ConflictObjectResult>(result.Result);
+    }
+
+    [Fact]
+    public void StatusRequestRequiresExplicitActiveValue()
+    {
+        var request = new UpdateVendorStatusRequest();
+        var validationResults = new List<ValidationResult>();
+
+        var isValid = Validator.TryValidateObject(
+            request,
+            new ValidationContext(request),
+            validationResults,
+            validateAllProperties: true);
+
+        Assert.False(isValid);
+        Assert.Contains(validationResults, result => result.MemberNames.Contains(nameof(request.IsActive)));
     }
 
     private sealed class FakeVendorService : IVendorService
