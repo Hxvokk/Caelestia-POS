@@ -25,12 +25,12 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [x] **RF-01** Iniciar y cerrar sesión con correo y contraseña mediante Supabase Auth en la app.
 - [x] Guardar y restaurar la sesión móvil con almacenamiento seguro.
 - [x] **RF-02** Validar en el backend el JWT, el perfil activo y el rol del usuario.
-- [ ] Crear/verificar en Supabase las cuentas iniciales de administrador y vendedor con sus perfiles activos; el administrador inicial se aprovisiona manualmente.
+- [x] Crear/verificar en Supabase las cuentas iniciales de administrador y vendedor con sus perfiles activos; el administrador inicial se aprovisiona manualmente.
 - [x] Aplicar navegación y opciones de inventario distintas según el rol; la API vuelve a verificar permisos.
 - [x] **RF-18** Permitir al administrador listar y crear vendedores, y activar/desactivar sus cuentas sin borrar su historial.
 - [x] **RF-19** Permitir al usuario cambiar voluntariamente su contraseña desde Mi perfil mediante Supabase Auth.
-- [ ] Configurar `Supabase:ServiceRoleKey` en User Secrets y probar la creación/activación de vendedores en el proyecto Supabase.
-- [ ] Probar el cambio de contraseña desde la app con una cuenta Supabase real.
+- [x] Configurar `Supabase:ServiceRoleKey` en User Secrets y probar la creación/activación de vendedores en el proyecto Supabase.
+- [x] Probar el cambio de contraseña desde la app con una cuenta Supabase real.
 
 ### Marcas, modelos y unidades
 
@@ -42,9 +42,9 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [x] **RF-07** Filtrar por marca, precio, procesador/chip, memoria mínima y disponibilidad.
 - [x] **RF-03–RF-06** Proporcionar pantallas móviles de administración para marcas, modelos y unidades; los permisos se validan también en backend.
 - [ ] **RF-21** Permitir adjuntar un archivo de imagen del dispositivo al crear o editar un modelo.
-- [ ] Probar en Android catálogo, administración de inventario/vendedores y perfil, conectados a Supabase y la API con registros reales.
+- [x] Probar en Android catálogo, administración de inventario/vendedores y perfil, conectados a Supabase y la API con registros reales mediante Expo Go.
 - [ ] Verificar en móvil que los datos opcionales no publicados o no aplicables queden sin especificar y no se inventen.
-- [ ] Probar con modelos y números de serie reales y verificados; no usar unidades ficticias.
+- [x] Probar con modelos y números de serie reales y verificados; no usar unidades ficticias.
 
 ## Semana 3 — Ventas, pagos e historial
 
@@ -92,7 +92,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [x] **RNF-02** Mantener la API local para esta etapa; si se prepara una demostración desplegada, exigir HTTPS.
 - [ ] **RNF-06** Verificar con pruebas que la venta sea atómica y que una unidad no pueda venderse dos veces.
 - [ ] **RNF-07** Confirmar que las credenciales de Supabase y DeepSeek no estén en el código móvil ni en el repositorio.
-- [ ] **RNF-09** Probar la aplicación en un dispositivo Android compatible con la versión de Expo utilizada.
+- [x] **RNF-09** Probar la aplicación en un dispositivo Android compatible con la versión de Expo utilizada.
 - [ ] **RNF-10** Verificar que el asesor solo recomiende modelos elegibles y no invente precios ni especificaciones.
 - [ ] **RNF-11** Verificar que DeepSeek solo se invoque a petición y no reciba números de serie ni datos personales.
 - [ ] **RNF-12** Verificar que ninguna pantalla de pago solicite datos bancarios reales.
@@ -107,7 +107,7 @@ Comprobaciones ejecutadas el 17-11-2026:
 - [x] `python3 -m unittest discover -s tests` — 2 pruebas aprobadas.
 - [x] `npx expo-doctor` — 20/20 comprobaciones.
 - [x] `npx expo export --platform android`.
-- [ ] Prueba integrada en dispositivo Android: pendiente de configurar `mobile/.env.local` para Supabase y la API.
+- [x] Prueba integrada en dispositivo Android mediante Expo Go: sesión de administrador, catálogo, gestión de vendedores, marcas, modelos y unidades, creación/activación de vendedor, cambio de contraseña y persistencia de sesión. Verificada el 19-11-2026.
 
 ## Próximo paso
 
