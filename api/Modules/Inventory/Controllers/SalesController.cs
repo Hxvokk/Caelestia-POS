@@ -9,8 +9,47 @@ namespace Api.Modules.Inventory.Controllers;
 [ApiController]
 [Route("api/sales")]
 [Authorize(Roles = "administrador,vendedor")]
-public sealed class SalesController(ISaleService saleService) : ControllerBase
+public sealed class SalesController(
+    ISaleService saleService,
+    ISaleHistoryService historyService) : ControllerBase
 {
+    [HttpGet]
+    [ProducesResponseType<IReadOnlyList<SaleHistoryItemResponse>>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<SaleHistoryItemResponse>>> GetHistory(
+        CancellationToken cancellationToken)
+    {
+        if (!Guid.TryParse(User.FindFirstValue("sub"), out var userId))
+        {
+            return Unauthorized();
+        }
+
+        Guid? scopeUserId = User.IsInRole("administrador") ? null : userId;
+        return Ok(await historyService.GetHistoryAsync(scopeUserId, cancellationToken));
+    }
+
+    [HttpGet("{id:long}")]
+    [ProducesResponseType<SaleHistoryDetailResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<SaleHistoryDetailResponse>> GetById(
+        long id,
+        CancellationToken cancellationToken)
+    {
+        if (!Guid.TryParse(User.FindFirstValue("sub"), out var userId))
+        {
+            return Unauthorized();
+        }
+
+        Guid? scopeUserId = User.IsInRole("administrador") ? null : userId;
+        var sale = await historyService.GetByIdAsync(id, scopeUserId, cancellationToken);
+        return sale is null
+            ? NotFound(new ProblemDetails
+            {
+                Title = "No se encontró la venta solicitada.",
+                Status = StatusCodes.Status404NotFound
+            })
+            : Ok(sale);
+    }
+
     [HttpPost]
     [ProducesResponseType<SaleResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]

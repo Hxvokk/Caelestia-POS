@@ -52,6 +52,8 @@ Abrir la dirección local que aparece en la terminal y añadir `/swagger`. Desde
 - `/api/laptops` permite consultar, filtrar, registrar, modificar y eliminar modelos sin unidades asociadas.
 - `/api/units` permite consultar, registrar, modificar y eliminar unidades por número de serie; las unidades vendidas o con historial no se pueden modificar ni eliminar.
 - `POST /api/sales` registra una venta de una o más unidades existentes con pago simulado, conserva el precio vendido y marca las unidades como vendidas en una transacción.
+- `GET /api/sales` consulta las ventas completadas: los administradores ven todas y los vendedores solo las propias.
+- `GET /api/sales/{id}` consulta el detalle de una venta; el backend oculta las ventas de otros vendedores como no encontradas.
 
 El cliente móvil consulta `/api/laptops` y `/api/units` después de iniciar sesión. El catálogo muestra la imagen, la marca, el SKU, el precio y las especificaciones disponibles.
 

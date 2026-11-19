@@ -116,6 +116,8 @@ var connectionString = builder.Configuration.GetConnectionString("Caelestia");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString ?? string.Empty));
 builder.Services.AddScoped<ISaleService, SaleService>();
+builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+builder.Services.AddScoped<ISaleHistoryService, SaleHistoryService>();
 
 builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 builder.Services.AddScoped<IBrandService, BrandService>();

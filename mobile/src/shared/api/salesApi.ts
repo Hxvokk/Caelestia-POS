@@ -30,6 +30,39 @@ export type SaleResponse = {
   }[];
 };
 
+export type SaleHistoryItem = {
+  id: number;
+  date: string;
+  total: number;
+  status: string;
+  paymentMethod: SalePaymentMethod;
+  itemCount: number;
+};
+
+export type SaleHistoryDetail = {
+  id: number;
+  userId: string;
+  sellerName: string;
+  date: string;
+  total: number;
+  status: string;
+  paymentMethod: SalePaymentMethod;
+  amountReceived: number | null;
+  change: number;
+  isSimulated: boolean;
+  items: SaleResponse["items"];
+};
+
+export async function getSalesHistory(): Promise<SaleHistoryItem[]> {
+  const response = await apiClient.get<SaleHistoryItem[]>("/api/sales");
+  return response.data;
+}
+
+export async function getSaleHistoryDetail(id: number): Promise<SaleHistoryDetail> {
+  const response = await apiClient.get<SaleHistoryDetail>(`/api/sales/${id}`);
+  return response.data;
+}
+
 export class PaymentRejectedError extends Error {
   constructor(message: string) {
     super(message);

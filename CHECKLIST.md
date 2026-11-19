@@ -8,8 +8,8 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - [x] Estructura separada: aplicación móvil en `mobile/` y backend en `api/`.
 - [x] Inicio/cierre de sesión y lectura del rol validado por la API para mostrar administración solo al administrador.
-- [ ] Completar la aplicación móvil definida en el documento. El catálogo y su administración están implementados; faltan ventas y otros módulos planeados.
-- [ ] Completar e integrar los módulos planeados de usuarios, historial, dashboard y asesor.
+- [ ] Completar la aplicación móvil definida en el documento. Catálogo, administración y flujos de venta están implementados; faltan historial, dashboard, asesor e imagen adjunta.
+- [ ] Completar e integrar historial, dashboard, asesor e imagen adjunta a modelos.
 - [ ] Probar la aplicación en Android conectada a la API local y a Supabase.
 
 ## Semana 1 — Definición y planeación
@@ -58,8 +58,8 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [ ] **RF-11** Verificar en Expo Go la selección de aprobación/rechazo para débito y crédito, sin solicitar datos bancarios.
 - [x] **RF-11** Implementar en backend el escenario de tarjeta rechazada y asegurar que no cree venta, pago ni cambie inventario.
 - [ ] **RF-12** Verificar en Expo Go el resultado de venta aprobada o pago rechazado.
-- [ ] **RF-13** Añadir consulta API de historial y detalle de ventas con permisos por rol.
-- [ ] **RF-13** Implementar historial móvil: ventas autorizadas para administrador y ventas propias para vendedor.
+- **Parcial** — **RF-13** API de historial/detalle e interfaz móvil implementadas; pruebas de rol, compilación y análisis estático aprobados. Falta la prueba manual final en Expo Go.
+- [ ] **RF-13** Verificar en Expo Go historial y detalle: administrador ve todas las ventas; vendedor solo las propias.
 - [ ] **RF-12, RF-13** Verificar que pagos rechazados no aparezcan en el historial ni cambien inventario.
 
 ## Semana 4 — Asesor de laptops
@@ -108,7 +108,8 @@ Comprobaciones ejecutadas el 19-11-2026:
 - [x] `npx expo-doctor` — 20/20 comprobaciones.
 - [x] `npx expo export --platform android`.
 - [x] Prueba integrada en dispositivo Android mediante Expo Go: sesión de administrador, catálogo, gestión de vendedores, marcas, modelos y unidades, creación/activación de vendedor, cambio de contraseña y persistencia de sesión. Verificada el 19-11-2026.
+- [x] Historial RF-13: `dotnet test CaelestiaPOS.sln` — 42 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
 
 ## Próximo paso
 
-Continuar con el flujo móvil de ventas: carrito, pago simulado y resultado, empezando por implementar en backend el escenario de pago con tarjeta rechazado. No registrar ventas reales ni inventar unidades.
+Continuar con RF-14: dashboard administrativo y navegación desde métricas a los listados relacionados. Mantener las pruebas manuales de todos los flujos para el cierre final.

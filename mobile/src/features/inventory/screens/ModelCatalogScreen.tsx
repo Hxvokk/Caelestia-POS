@@ -234,6 +234,14 @@ export function ModelCatalogScreen() {
               <Text style={styles.cartButtonAction}>Ver carrito ›</Text>
             </Pressable>
 
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push("/sales")}
+              style={styles.historyButton}
+            >
+              <Text style={styles.historyButtonText}>Consultar historial de ventas ›</Text>
+            </Pressable>
+
             <Text style={styles.sectionLabel}>Buscar modelo o marca</Text>
             <TextInput
               accessibilityLabel="Buscar modelo o marca"
@@ -442,6 +450,16 @@ const styles = StyleSheet.create({
   cartButtonTitle: { color: colors.text, fontSize: 14, fontWeight: "700" },
   cartButtonSubtitle: { marginTop: 3, color: colors.muted, fontSize: 12 },
   cartButtonAction: { color: colors.primary, fontSize: 13, fontWeight: "700" },
+  historyButton: {
+    alignItems: "center",
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 11,
+    backgroundColor: colors.surface,
+  },
+  historyButtonText: { color: colors.primary, fontSize: 13, fontWeight: "700" },
   sectionLabel: { marginTop: spacing.sm, marginBottom: spacing.xs, color: colors.text, fontWeight: "700" },
   searchInput: {
     minHeight: 46,
