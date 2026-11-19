@@ -8,8 +8,8 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - [x] Estructura separada: aplicación móvil en `mobile/` y backend en `api/`.
 - [x] Inicio/cierre de sesión y lectura del rol validado por la API para mostrar administración solo al administrador.
-- [ ] Completar la aplicación móvil definida en el documento. Catálogo, administración, ventas, historial, dashboard y asesor están implementados; falta adjuntar imágenes y realizar la ronda final de pruebas manuales.
-- [ ] Completar la integración de imagen adjunta y la verificación final de todos los flujos.
+- **Parcial** — Catálogo, administración, ventas, historial, dashboard y asesor están implementados. RF-21 ya permite seleccionar y subir imagen; falta probarlo contra el bucket configurado y completar la ronda manual final.
+- [ ] Completar la verificación final de todos los flujos en Expo Go; ventas depende de que haya unidades disponibles.
 - [ ] Probar la aplicación en Android conectada a la API local y a Supabase.
 
 ## Semana 1 — Definición y planeación
@@ -41,7 +41,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [x] **RF-07** Mostrar catálogo, detalle, búsqueda y números de serie disponibles, incluidos modelos sin unidades disponibles.
 - [x] **RF-07** Filtrar por marca, precio, procesador/chip, memoria mínima y disponibilidad.
 - [x] **RF-03–RF-06** Proporcionar pantallas móviles de administración para marcas, modelos y unidades; los permisos se validan también en backend.
-- [ ] **RF-21** Permitir adjuntar un archivo de imagen del dispositivo al crear o editar un modelo.
+- **Parcial** — **RF-21** Selección, vista previa y carga JPEG/PNG/WebP (máximo 5 MB) implementadas; el backend valida firma y rol administrador y guarda en Supabase Storage. Falta probar con el bucket público `catalog-images` configurado.
 - [x] Probar en Android catálogo, administración de inventario/vendedores y perfil, conectados a Supabase y la API con registros reales mediante Expo Go.
 - [ ] Verificar en móvil que los datos opcionales no publicados o no aplicables queden sin especificar y no se inventen.
 - [x] Probar con modelos y números de serie reales y verificados; no usar unidades ficticias.
@@ -77,7 +77,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - **Parcial** — **RF-14** Dashboard administrativo implementado con las cuatro métricas y endpoint protegido; falta verificación manual final en Expo Go y revisar valores con datos del entorno.
 - **Parcial** — **RF-20** Cada métrica navega al historial, unidades filtradas o lista de modelos; falta verificación manual final en Expo Go.
-- [ ] Completar pruebas de API, reglas de negocio y permisos por rol.
+- **Parcial** — Hay pruebas automatizadas para API, reglas de negocio y permisos; faltan pruebas de integración en entorno Supabase y revisión final.
 - [ ] Verificar en Android los flujos completos de administrador y vendedor.
 - [ ] Confirmar manejo controlado de errores de API, Supabase y DeepSeek.
 - [ ] Preparar evidencias de ejecución y pruebas para la demostración final.
@@ -90,27 +90,28 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [x] La API se ejecuta localmente durante el desarrollo; no desplegarla públicamente en esta etapa.
 - [ ] **RNF-01** Medir tiempos de respuesta con hasta 500 unidades y comprobar el objetivo menor a tres segundos.
 - [x] **RNF-02** Mantener la API local para esta etapa; si se prepara una demostración desplegada, exigir HTTPS.
-- [ ] **RNF-06** Verificar con pruebas que la venta sea atómica y que una unidad no pueda venderse dos veces.
-- [ ] **RNF-07** Confirmar que las credenciales de Supabase y DeepSeek no estén en el código móvil ni en el repositorio.
+- **Parcial** — La venta se ejecuta en transacción y maneja conflictos; faltan pruebas concurrentes que demuestren atomicidad y eviten la doble venta.
+- **Parcial** — Las claves se configuran en backend con User Secrets y no se exponen al cliente móvil. Falta una revisión final de secretos/versionado antes de la entrega.
 - [x] **RNF-09** Probar la aplicación en un dispositivo Android compatible con la versión de Expo utilizada.
 - [ ] **RNF-10** Verificar que el asesor solo recomiende modelos elegibles y no invente precios ni especificaciones.
 - **Parcial** — **RNF-11** Pruebas automatizadas verifican invocación bajo demanda y ausencia de números de serie en el payload; falta la verificación manual final de datos transmitidos.
 - [ ] **RNF-12** Verificar que ninguna pantalla de pago solicite datos bancarios reales.
-- [ ] Ejecutar y registrar las pruebas finales de backend y frontend después de completar cada módulo.
+- [x] Ejecutar pruebas automatizadas de backend y frontend después de cada módulo implementado.
 
 ## Verificación técnica más reciente
 
-Comprobaciones ejecutadas el 19-11-2026:
+Comprobaciones más recientes de esta sesión:
 
 - [x] `npm run typecheck` y `npm run lint` en `mobile/`.
-- [x] `dotnet test CaelestiaPOS.sln` — 40 pruebas aprobadas.
+- [x] `dotnet test CaelestiaPOS.sln` — 53 pruebas aprobadas.
 - [x] `python3 -m unittest discover -s tests` — 2 pruebas aprobadas.
 - [x] `npx expo-doctor` — 20/20 comprobaciones.
 - [x] `npx expo export --platform android`.
 - [x] Prueba integrada en dispositivo Android mediante Expo Go: sesión de administrador, catálogo, gestión de vendedores, marcas, modelos y unidades, creación/activación de vendedor, cambio de contraseña y persistencia de sesión. Verificada el 19-11-2026.
 - [x] Historial RF-13: `dotnet test CaelestiaPOS.sln` — 42 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
 - [x] Asesor RF-15–RF-17: `dotnet test CaelestiaPOS.sln` — 47 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
+- [x] RF-21: pruebas backend (53 totales), `npm run typecheck`, `npm run lint`, `npx expo-doctor` (20/20) y `npx expo export --platform android` aprobados. Lint conserva solo la advertencia generada en `.expo/types/router.d.ts`.
 
 ## Próximo paso
 
-Continuar con RF-21: permitir seleccionar y adjuntar una imagen al crear o editar un modelo. Mantener las pruebas manuales de todos los flujos para el cierre final.
+Configurar el bucket público `catalog-images` y `Supabase:ServiceRoleKey` en User Secrets; probar la carga RF-21 en Expo Go y después ejecutar la ronda manual consolidada. La prueba de venta requiere unidades reales disponibles; no crear ni vender datos ficticios.

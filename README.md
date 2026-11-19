@@ -41,6 +41,8 @@ Requisitos: .NET SDK 11.
 
    Opcionalmente, establecer el modelo con `dotnet user-secrets set "DeepSeek:Model" "deepseek-flash"`. Nunca guardar esta clave en la app móvil, variables `EXPO_PUBLIC_*` ni archivos versionados. Si no se configura o el servicio no responde, el asesor utiliza el ordenamiento local por reglas.
 
+6. Para adjuntar imágenes a modelos, crear en **Storage** un bucket público llamado `catalog-images`. El backend lo usa para guardar imágenes JPEG, PNG o WebP de hasta 5 MB. La clave `Supabase:ServiceRoleKey` se utiliza solo desde el backend; no crear políticas ni incluir esa clave en la app móvil. La carga requiere que la URL del proyecto y la clave de servicio estén configuradas.
+
 ### Ejecutar y comprobar
 
 Desde la raíz del repositorio:
@@ -64,6 +66,7 @@ Abrir la dirección local que aparece en la terminal y añadir `/swagger`. Desde
 - `GET /api/sales/{id}` consulta el detalle de una venta; el backend oculta las ventas de otros vendedores como no encontradas.
 - `GET /api/dashboard` devuelve las ventas acumuladas completadas, unidades vendidas, unidades disponibles y modelos registrados; requiere rol `administrador`.
 - `POST /api/advisor/recommendations` consulta modelos existentes con unidades disponibles y dentro del presupuesto. DeepSeek solo se invoca cuando se solicita una recomendación y hay una clave configurada; si no, se utiliza la alternativa local.
+- `POST /api/laptops/{id}/image` adjunta una imagen al modelo indicado; requiere rol administrador y el bucket público `catalog-images`.
 
 El cliente móvil consulta `/api/laptops` y `/api/units` después de iniciar sesión. El catálogo muestra la imagen, la marca, el SKU, el precio y las especificaciones disponibles.
 
