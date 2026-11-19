@@ -12,6 +12,14 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [ ] Completar la verificación final de todos los flujos en Expo Go; ventas depende de que haya unidades disponibles.
 - [ ] Probar la aplicación en Android conectada a la API local y a Supabase.
 
+## Pendiente para el cierre
+
+- Configurar el bucket público `catalog-images` y `Supabase:ServiceRoleKey`; probar la carga RF-21 desde Expo Go. El cambio está dividido en [API/almacenamiento (#1)](https://github.com/Hxvokk/Caelestia-POS/pull/1) y [móvil/checklist (#2)](https://github.com/Hxvokk/Caelestia-POS/pull/2).
+- Completar la ronda manual en Expo Go para catálogo, roles, ventas, historial, dashboard y asesor. No registrar ventas durante la prueba sin unidades reales disponibles.
+- Medir el rendimiento con hasta 500 unidades y documentar el resultado; no se ha ejecutado una medición con datos representativos.
+- Completar verificación concurrente de venta atómica y ausencia de doble venta; el backend usa transacción serializable y bloqueo de filas, pero falta una prueba concurrente.
+- Cerrar revisión de seguridad, manejo de errores externos, datos bancarios y evidencias para la demostración.
+
 ## Semana 1 — Definición y planeación
 
 - [x] Definir objetivos, alcance, roles, requerimientos y casos de uso.
@@ -93,7 +101,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - **Parcial** — La venta se ejecuta en transacción y maneja conflictos; faltan pruebas concurrentes que demuestren atomicidad y eviten la doble venta.
 - **Parcial** — Las claves se configuran en backend con User Secrets y no se exponen al cliente móvil. Falta una revisión final de secretos/versionado antes de la entrega.
 - [x] **RNF-09** Probar la aplicación en un dispositivo Android compatible con la versión de Expo utilizada.
-- [ ] **RNF-10** Verificar que el asesor solo recomiende modelos elegibles y no invente precios ni especificaciones.
+- **Parcial** — **RNF-10** Pruebas automatizadas cubren presupuesto, disponibilidad, requisitos estructurados y uso exclusivo de datos del catálogo; falta revisar las recomendaciones manualmente en Expo Go.
 - **Parcial** — **RNF-11** Pruebas automatizadas verifican invocación bajo demanda y ausencia de números de serie en el payload; falta la verificación manual final de datos transmitidos.
 - [ ] **RNF-12** Verificar que ninguna pantalla de pago solicite datos bancarios reales.
 - [x] Ejecutar pruebas automatizadas de backend y frontend después de cada módulo implementado.
