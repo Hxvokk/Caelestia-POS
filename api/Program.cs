@@ -1,4 +1,6 @@
 using Api.Data;
+using Api.Modules.Advisor.Repositories;
+using Api.Modules.Advisor.Services;
 using Api.Modules.Inventory.Models;
 using Api.Modules.Inventory.Repositories;
 using Api.Modules.Inventory.Services;
@@ -120,6 +122,12 @@ builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<ISaleHistoryService, SaleHistoryService>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IAdvisorRepository, AdvisorRepository>();
+builder.Services.AddScoped<IRecommendationService, RecommendationService>();
+builder.Services.AddHttpClient<IRecommendationAiClient, DeepSeekRecommendationClient>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(15);
+});
 
 builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 builder.Services.AddScoped<IBrandService, BrandService>();

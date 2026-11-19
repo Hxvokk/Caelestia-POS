@@ -31,7 +31,15 @@ Requisitos: .NET SDK 11.
    dotnet user-secrets set "Supabase:ServiceRoleKey" "TU_SECRET_KEY_DE_SUPABASE"
    ```
 
-   La clave secreta o `service_role` debe utilizarse únicamente en el backend. No incluirla en `mobile/`, `.env.local`, el código fuente ni Git. Sin esta configuración, los endpoints administrativos de usuarios responden `503`.
+    La clave secreta o `service_role` debe utilizarse únicamente en el backend. No incluirla en `mobile/`, `.env.local`, el código fuente ni Git. Sin esta configuración, los endpoints administrativos de usuarios responden `503`.
+
+5. Para habilitar el ranking opcional del asesor, guardar la clave de DeepSeek en User Secrets:
+
+   ```sh
+   dotnet user-secrets set "DeepSeek:ApiKey" "TU_API_KEY_DE_DEEPSEEK"
+   ```
+
+   Opcionalmente, establecer el modelo con `dotnet user-secrets set "DeepSeek:Model" "deepseek-flash"`. Nunca guardar esta clave en la app móvil, variables `EXPO_PUBLIC_*` ni archivos versionados. Si no se configura o el servicio no responde, el asesor utiliza el ordenamiento local por reglas.
 
 ### Ejecutar y comprobar
 
@@ -55,6 +63,7 @@ Abrir la dirección local que aparece en la terminal y añadir `/swagger`. Desde
 - `GET /api/sales` consulta las ventas completadas: los administradores ven todas y los vendedores solo las propias.
 - `GET /api/sales/{id}` consulta el detalle de una venta; el backend oculta las ventas de otros vendedores como no encontradas.
 - `GET /api/dashboard` devuelve las ventas acumuladas completadas, unidades vendidas, unidades disponibles y modelos registrados; requiere rol `administrador`.
+- `POST /api/advisor/recommendations` consulta modelos existentes con unidades disponibles y dentro del presupuesto. DeepSeek solo se invoca cuando se solicita una recomendación y hay una clave configurada; si no, se utiliza la alternativa local.
 
 El cliente móvil consulta `/api/laptops` y `/api/units` después de iniciar sesión. El catálogo muestra la imagen, la marca, el SKU, el precio y las especificaciones disponibles.
 

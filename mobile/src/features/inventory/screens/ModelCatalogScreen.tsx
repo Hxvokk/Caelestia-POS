@@ -242,6 +242,14 @@ export function ModelCatalogScreen() {
               <Text style={styles.historyButtonText}>Consultar historial de ventas ›</Text>
             </Pressable>
 
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push("/advisor")}
+              style={styles.historyButton}
+            >
+              <Text style={styles.historyButtonText}>Asesor de laptops ›</Text>
+            </Pressable>
+
             <Text style={styles.sectionLabel}>Buscar modelo o marca</Text>
             <TextInput
               accessibilityLabel="Buscar modelo o marca"

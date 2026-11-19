@@ -8,8 +8,8 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - [x] Estructura separada: aplicación móvil en `mobile/` y backend en `api/`.
 - [x] Inicio/cierre de sesión y lectura del rol validado por la API para mostrar administración solo al administrador.
-- [ ] Completar la aplicación móvil definida en el documento. Catálogo, administración y flujos de venta están implementados; faltan historial, dashboard, asesor e imagen adjunta.
-- [ ] Completar e integrar historial, dashboard, asesor e imagen adjunta a modelos.
+- [ ] Completar la aplicación móvil definida en el documento. Catálogo, administración, ventas, historial, dashboard y asesor están implementados; falta adjuntar imágenes y realizar la ronda final de pruebas manuales.
+- [ ] Completar la integración de imagen adjunta y la verificación final de todos los flujos.
 - [ ] Probar la aplicación en Android conectada a la API local y a Supabase.
 
 ## Semana 1 — Definición y planeación
@@ -64,14 +64,14 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 ## Semana 4 — Asesor de laptops
 
-- [ ] **RF-15** Crear en la app el formulario de presupuesto y descripción de necesidades.
-- [ ] **RF-15** Permitir requisitos técnicos opcionales: software, resolución, RAM, almacenamiento y GPU.
-- [ ] **RF-16, RF-17** Implementar en backend la consulta de modelos existentes con unidades disponibles y dentro del presupuesto.
-- [ ] **RF-17** Integrar DeepSeek únicamente cuando el usuario solicite una recomendación.
-- [ ] **RF-17** Validar la respuesta contra catálogo, disponibilidad, presupuesto y requisitos obligatorios.
-- [ ] **RF-16** Mostrar hasta tres opciones con coincidencias y limitaciones, sin inventar precios ni especificaciones.
-- [ ] **RF-17** Implementar alternativa por reglas o mensaje de información insuficiente cuando DeepSeek no responda o no haya candidatos.
-- [ ] **RNF-11** Confirmar que no se envíen números de serie ni datos personales al asesor.
+- **Parcial** — **RF-15** Formulario móvil de presupuesto y necesidades implementado; falta verificación manual final.
+- **Parcial** — **RF-15** Requisitos opcionales de software, resolución, RAM, almacenamiento y GPU disponibles; los requisitos almacenados se validan y las especificaciones no registradas se señalan como limitaciones.
+- **Parcial** — **RF-16, RF-17** El backend consulta únicamente modelos existentes con unidades disponibles y dentro del presupuesto; falta validar resultados con el entorno real.
+- **Parcial** — **RF-17** DeepSeek se configura solo en el backend y solo se invoca al solicitar recomendaciones; falta prueba manual final con una clave configurada.
+- **Parcial** — **RF-17** Los IDs se restringen a candidatos elegibles por presupuesto, disponibilidad y requisitos estructurados; falta validar el flujo completo.
+- **Parcial** — **RF-16** Se presentan hasta tres modelos con datos del catálogo, coincidencias y limitaciones; falta revisión manual final.
+- **Parcial** — **RF-17** Si DeepSeek no está configurado, falla o no produce opciones válidas, se usa un ordenamiento local; sin candidatos se informa que no hay resultados.
+- **Parcial** — **RNF-11** No se envían identificadores de usuario ni números de serie; se redactan correos y teléfonos de los campos de texto antes del envío. Falta revisión manual de los datos enviados.
 
 ## Semana 5 — Dashboard, pruebas e integración
 
@@ -94,7 +94,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [ ] **RNF-07** Confirmar que las credenciales de Supabase y DeepSeek no estén en el código móvil ni en el repositorio.
 - [x] **RNF-09** Probar la aplicación en un dispositivo Android compatible con la versión de Expo utilizada.
 - [ ] **RNF-10** Verificar que el asesor solo recomiende modelos elegibles y no invente precios ni especificaciones.
-- [ ] **RNF-11** Verificar que DeepSeek solo se invoque a petición y no reciba números de serie ni datos personales.
+- **Parcial** — **RNF-11** Pruebas automatizadas verifican invocación bajo demanda y ausencia de números de serie en el payload; falta la verificación manual final de datos transmitidos.
 - [ ] **RNF-12** Verificar que ninguna pantalla de pago solicite datos bancarios reales.
 - [ ] Ejecutar y registrar las pruebas finales de backend y frontend después de completar cada módulo.
 
@@ -109,7 +109,8 @@ Comprobaciones ejecutadas el 19-11-2026:
 - [x] `npx expo export --platform android`.
 - [x] Prueba integrada en dispositivo Android mediante Expo Go: sesión de administrador, catálogo, gestión de vendedores, marcas, modelos y unidades, creación/activación de vendedor, cambio de contraseña y persistencia de sesión. Verificada el 19-11-2026.
 - [x] Historial RF-13: `dotnet test CaelestiaPOS.sln` — 42 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
+- [x] Asesor RF-15–RF-17: `dotnet test CaelestiaPOS.sln` — 47 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
 
 ## Próximo paso
 
-Continuar con RF-15–RF-17: formulario e implementación del asesor de laptops con DeepSeek bajo demanda y alternativa por reglas. Mantener las pruebas manuales de todos los flujos para el cierre final.
+Continuar con RF-21: permitir seleccionar y adjuntar una imagen al crear o editar un modelo. Mantener las pruebas manuales de todos los flujos para el cierre final.
