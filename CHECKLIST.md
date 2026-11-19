@@ -99,11 +99,11 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [ ] **RNF-01** Medir tiempos de respuesta con hasta 500 unidades y comprobar el objetivo menor a tres segundos.
 - [x] **RNF-02** Mantener la API local para esta etapa; si se prepara una demostración desplegada, exigir HTTPS.
 - **Parcial** — La venta se ejecuta en transacción y maneja conflictos; faltan pruebas concurrentes que demuestren atomicidad y eviten la doble venta.
-- **Parcial** — Las claves se configuran en backend con User Secrets y no se exponen al cliente móvil. Falta una revisión final de secretos/versionado antes de la entrega.
+- **Parcial** — Las claves se configuran en backend con User Secrets y no se exponen al cliente móvil; la búsqueda de patrones de claves en archivos versionados no encontró coincidencias. Falta revisión manual final de configuración y versionado.
 - [x] **RNF-09** Probar la aplicación en un dispositivo Android compatible con la versión de Expo utilizada.
 - **Parcial** — **RNF-10** Pruebas automatizadas cubren presupuesto, disponibilidad, requisitos estructurados y uso exclusivo de datos del catálogo; falta revisar las recomendaciones manualmente en Expo Go.
 - **Parcial** — **RNF-11** Pruebas automatizadas verifican invocación bajo demanda y ausencia de números de serie en el payload; falta la verificación manual final de datos transmitidos.
-- [ ] **RNF-12** Verificar que ninguna pantalla de pago solicite datos bancarios reales.
+- **Parcial** — **RNF-12** La pantalla de pago ofrece resultados simulados y solo captura efectivo; la revisión del código no encontró campos de tarjeta. Falta confirmar el flujo visualmente en Expo Go.
 - [x] Ejecutar pruebas automatizadas de backend y frontend después de cada módulo implementado.
 
 ## Verificación técnica más reciente
