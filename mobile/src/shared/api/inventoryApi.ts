@@ -7,6 +7,18 @@ import type {
   LaptopUnitFilters,
 } from "./types";
 
+export type DashboardMetrics = {
+  completedSalesTotal: number;
+  soldUnits: number;
+  availableUnits: number;
+  registeredModels: number;
+};
+
+export async function getDashboardMetrics(): Promise<DashboardMetrics> {
+  const response = await apiClient.get<DashboardMetrics>("/api/dashboard");
+  return response.data;
+}
+
 export async function getBrands(): Promise<Brand[]> {
   const response = await apiClient.get<Brand[]>("/api/brands");
   return response.data;

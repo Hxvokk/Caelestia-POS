@@ -54,6 +54,7 @@ Abrir la dirección local que aparece en la terminal y añadir `/swagger`. Desde
 - `POST /api/sales` registra una venta de una o más unidades existentes con pago simulado, conserva el precio vendido y marca las unidades como vendidas en una transacción.
 - `GET /api/sales` consulta las ventas completadas: los administradores ven todas y los vendedores solo las propias.
 - `GET /api/sales/{id}` consulta el detalle de una venta; el backend oculta las ventas de otros vendedores como no encontradas.
+- `GET /api/dashboard` devuelve las ventas acumuladas completadas, unidades vendidas, unidades disponibles y modelos registrados; requiere rol `administrador`.
 
 El cliente móvil consulta `/api/laptops` y `/api/units` después de iniciar sesión. El catálogo muestra la imagen, la marca, el SKU, el precio y las especificaciones disponibles.
 

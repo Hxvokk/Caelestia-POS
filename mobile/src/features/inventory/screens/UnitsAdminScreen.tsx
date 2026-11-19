@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Alert, Text } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { deleteLaptopUnit } from "../../../shared/api/inventoryAdminApi";
 import { getApiErrorMessage } from "../../../shared/api/client";
 import { getLaptopUnits } from "../../../shared/api/inventoryApi";
@@ -9,6 +9,8 @@ import { colors } from "../../../shared/config/theme";
 import { AdminCard, AdminGuard, AdminHelperText, AdminPage, AdminPrimaryButton, AdminSecondaryButton } from "../components/AdminAccess";
 
 export function UnitsAdminScreen() {
+  const { status } = useLocalSearchParams<{ status?: string }>();
+  const unitStatus = status === "vendida" || status === "disponible" ? status : undefined;
   const [units, setUnits] = useState<LaptopUnit[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,18 +18,20 @@ export function UnitsAdminScreen() {
   const loadUnits = useCallback(async () => {
     setIsLoading(true);
     try {
-      setUnits(await getLaptopUnits());
+      setUnits(await getLaptopUnits({ status: unitStatus }));
       setError(null);
     } catch (loadError) {
       setError(getApiErrorMessage(loadError));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [unitStatus]);
 
-  useEffect(() => {
-    void Promise.resolve().then(loadUnits);
-  }, [loadUnits]);
+  useFocusEffect(
+    useCallback(() => {
+      void loadUnits();
+    }, [loadUnits]),
+  );
 
   const confirmDelete = (unit: LaptopUnit) => {
     Alert.alert(
@@ -50,11 +54,19 @@ export function UnitsAdminScreen() {
 
   return (
     <AdminGuard>
-      <AdminPage title="Unidades físicas">
-        <AdminPrimaryButton
-          label="Registrar unidad"
-          onPress={() => router.push("/admin/units/new")}
-        />
+      <AdminPage title={unitStatus ? `Unidades ${unitStatus}` : "Unidades físicas"}>
+        {unitStatus !== "vendida" ? (
+          <AdminPrimaryButton
+            label="Registrar unidad"
+            onPress={() => router.push("/admin/units/new")}
+          />
+        ) : null}
+        {unitStatus ? (
+          <AdminSecondaryButton
+            label="Ver todas las unidades"
+            onPress={() => router.replace("/admin/units")}
+          />
+        ) : null}
         <AdminHelperText>
           Las unidades vendidas o con historial no se pueden editar ni eliminar.
         </AdminHelperText>

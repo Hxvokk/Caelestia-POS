@@ -16,6 +16,13 @@ export function InventoryAdminScreen() {
           Las operaciones se validan nuevamente en la API y solo están disponibles para el administrador.
         </AdminHelperText>
         <AdminCard>
+          <Text>Consulta ventas acumuladas e inventario disponible.</Text>
+          <AdminSecondaryButton
+            label="Abrir dashboard"
+            onPress={() => router.push("/admin/dashboard")}
+          />
+        </AdminCard>
+        <AdminCard>
           <Text>Administra las cuentas y el acceso de los vendedores.</Text>
           <AdminSecondaryButton
             label="Administrar vendedores"

@@ -75,8 +75,8 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 ## Semana 5 — Dashboard, pruebas e integración
 
-- [ ] **RF-14** Implementar el dashboard administrativo con ventas acumuladas completadas, unidades vendidas, unidades disponibles y modelos registrados.
-- [ ] **RF-20** Permitir abrir el historial o listado relacionado desde cada métrica del dashboard.
+- **Parcial** — **RF-14** Dashboard administrativo implementado con las cuatro métricas y endpoint protegido; falta verificación manual final en Expo Go y revisar valores con datos del entorno.
+- **Parcial** — **RF-20** Cada métrica navega al historial, unidades filtradas o lista de modelos; falta verificación manual final en Expo Go.
 - [ ] Completar pruebas de API, reglas de negocio y permisos por rol.
 - [ ] Verificar en Android los flujos completos de administrador y vendedor.
 - [ ] Confirmar manejo controlado de errores de API, Supabase y DeepSeek.
@@ -112,4 +112,4 @@ Comprobaciones ejecutadas el 19-11-2026:
 
 ## Próximo paso
 
-Continuar con RF-14: dashboard administrativo y navegación desde métricas a los listados relacionados. Mantener las pruebas manuales de todos los flujos para el cierre final.
+Continuar con RF-15–RF-17: formulario e implementación del asesor de laptops con DeepSeek bajo demanda y alternativa por reglas. Mantener las pruebas manuales de todos los flujos para el cierre final.
