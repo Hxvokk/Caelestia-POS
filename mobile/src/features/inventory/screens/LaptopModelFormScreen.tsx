@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 import { z } from "zod";
 import { getApiErrorMessage } from "../../../shared/api/client";
 import {
   createLaptopModel,
+  uploadLaptopModelImage,
   updateLaptopModel,
   type SaveLaptopModelRequest,
 } from "../../../shared/api/inventoryAdminApi";
@@ -124,10 +126,46 @@ export function LaptopModelFormScreen() {
   const modelId = id ? Number(id) : null;
   const [brands, setBrands] = useState<Brand[]>([]);
   const [model, setModel] = useState<LaptopModel | null>(null);
+  const [persistedModelId, setPersistedModelId] = useState<number | null>(null);
+  const [selectedImage, setSelectedImage] = useState<{
+    uri: string;
+    mimeType: "image/jpeg" | "image/png" | "image/webp";
+    fileSize?: number;
+  } | null>(null);
   const [values, setValues] = useState<ModelFormValues>(emptyValues);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(Boolean(modelId));
   const [isSaving, setIsSaving] = useState(false);
+  const effectiveModelId = modelId ?? persistedModelId;
+  const isEditing = effectiveModelId !== null;
+
+  const pickModelImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        quality: 0.85,
+        exif: false,
+      });
+      if (result.canceled) return;
+
+      const asset = result.assets[0];
+      const mimeType = asset.mimeType;
+      if (mimeType !== "image/jpeg" && mimeType !== "image/png" && mimeType !== "image/webp") {
+        setValidationMessage("Elige una imagen JPEG, PNG o WebP.");
+        return;
+      }
+      if (asset.fileSize !== undefined && asset.fileSize > 5 * 1024 * 1024) {
+        setValidationMessage("La imagen no puede superar 5 MB.");
+        return;
+      }
+
+      setSelectedImage({ uri: asset.uri, mimeType, fileSize: asset.fileSize });
+      setValidationMessage(null);
+    } catch (pickerError) {
+      setValidationMessage(getApiErrorMessage(pickerError));
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -204,8 +242,27 @@ export function LaptopModelFormScreen() {
     setIsSaving(true);
     setValidationMessage(null);
     try {
-      if (modelId) await updateLaptopModel(modelId, request);
-      else await createLaptopModel(request);
+      let savedModelId = effectiveModelId;
+      if (savedModelId !== null) {
+        await updateLaptopModel(savedModelId, request);
+      } else {
+        const createdModel = await createLaptopModel(request);
+        savedModelId = createdModel.id;
+        setPersistedModelId(createdModel.id);
+        setModel(createdModel);
+      }
+
+      if (selectedImage) {
+        const imageResponse = await uploadLaptopModelImage(savedModelId, selectedImage);
+        setModel((current) => current
+          ? {
+              ...current,
+              imageUrl: imageResponse.imageUrl,
+              imageRightsStatus: imageResponse.imageRightsStatus,
+            }
+          : current);
+        setSelectedImage(null);
+      }
       router.replace("/admin/models");
     } catch (saveError) {
       setValidationMessage(getApiErrorMessage(saveError));
@@ -216,13 +273,53 @@ export function LaptopModelFormScreen() {
 
   return (
     <AdminGuard>
-      <AdminPage title={modelId ? "Editar modelo" : "Registrar modelo"}>
+      <AdminPage title={isEditing ? "Editar modelo" : "Registrar modelo"}>
         {isLoading ? <AdminHelperText>Cargando información…</AdminHelperText> : null}
         {validationMessage ? (
           <Text accessibilityRole="alert" style={{ color: colors.danger }}>
             {validationMessage}
           </Text>
         ) : null}
+
+        <AdminCard>
+          <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Imagen del modelo</Text>
+          <AdminHelperText>
+            Adjunta una imagen JPEG, PNG o WebP de hasta 5 MB. La imagen debe tener permiso de uso;
+            su estado de derechos permanecerá sin confirmar hasta registrarlo.
+          </AdminHelperText>
+          {selectedImage ? (
+            <Image
+              source={{ uri: selectedImage.uri }}
+              style={{ width: 180, height: 135, borderRadius: 10 }}
+            />
+          ) : model?.imageUrl ? (
+            <Image
+              source={{ uri: model.imageUrl }}
+              style={{ width: 180, height: 135, borderRadius: 10 }}
+            />
+          ) : (
+            <AdminHelperText>No hay una imagen adjunta.</AdminHelperText>
+          )}
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => void pickModelImage()}
+            style={{
+              minHeight: 44,
+              alignItems: "center",
+              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: colors.primary,
+              borderRadius: 9,
+            }}
+          >
+            <Text style={{ color: colors.primary, fontWeight: "700" }}>
+              {selectedImage ? "Cambiar imagen seleccionada" : "Seleccionar imagen"}
+            </Text>
+          </Pressable>
+          {selectedImage ? (
+            <AdminHelperText>La imagen se subirá al guardar el modelo.</AdminHelperText>
+          ) : null}
+        </AdminCard>
 
         <AdminCard>
           <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Marca</Text>

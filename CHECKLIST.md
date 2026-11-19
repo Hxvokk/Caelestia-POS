@@ -8,9 +8,17 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - [x] Estructura separada: aplicación móvil en `mobile/` y backend en `api/`.
 - [x] Inicio/cierre de sesión y lectura del rol validado por la API para mostrar administración solo al administrador.
-- [ ] Completar la aplicación móvil definida en el documento. El catálogo y su administración están implementados; faltan ventas y otros módulos planeados.
-- [ ] Completar e integrar los módulos planeados de usuarios, historial, dashboard y asesor.
+- **Parcial** — Catálogo, administración, ventas, historial, dashboard y asesor están implementados. RF-21 ya permite seleccionar y subir imagen; falta probarlo contra el bucket configurado y completar la ronda manual final.
+- [ ] Completar la verificación final de todos los flujos en Expo Go; ventas depende de que haya unidades disponibles.
 - [ ] Probar la aplicación en Android conectada a la API local y a Supabase.
+
+## Pendiente para el cierre
+
+- Configurar el bucket público `catalog-images` y `Supabase:ServiceRoleKey`; probar la carga RF-21 desde Expo Go. El cambio está dividido en [API/almacenamiento (#1)](https://github.com/Hxvokk/Caelestia-POS/pull/1) y [móvil/checklist (#2)](https://github.com/Hxvokk/Caelestia-POS/pull/2).
+- Completar la ronda manual en Expo Go para catálogo, roles, ventas, historial, dashboard y asesor. No registrar ventas durante la prueba sin unidades reales disponibles.
+- Medir el rendimiento con hasta 500 unidades y documentar el resultado; no se ha ejecutado una medición con datos representativos.
+- Completar verificación concurrente de venta atómica y ausencia de doble venta; el backend usa transacción serializable y bloqueo de filas, pero falta una prueba concurrente.
+- Cerrar revisión de seguridad, manejo de errores externos, datos bancarios y evidencias para la demostración.
 
 ## Semana 1 — Definición y planeación
 
@@ -41,7 +49,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [x] **RF-07** Mostrar catálogo, detalle, búsqueda y números de serie disponibles, incluidos modelos sin unidades disponibles.
 - [x] **RF-07** Filtrar por marca, precio, procesador/chip, memoria mínima y disponibilidad.
 - [x] **RF-03–RF-06** Proporcionar pantallas móviles de administración para marcas, modelos y unidades; los permisos se validan también en backend.
-- [ ] **RF-21** Permitir adjuntar un archivo de imagen del dispositivo al crear o editar un modelo.
+- **Parcial** — **RF-21** Selección, vista previa y carga JPEG/PNG/WebP (máximo 5 MB) implementadas; el backend valida firma y rol administrador y guarda en Supabase Storage. Falta probar con el bucket público `catalog-images` configurado.
 - [x] Probar en Android catálogo, administración de inventario/vendedores y perfil, conectados a Supabase y la API con registros reales mediante Expo Go.
 - [ ] Verificar en móvil que los datos opcionales no publicados o no aplicables queden sin especificar y no se inventen.
 - [x] Probar con modelos y números de serie reales y verificados; no usar unidades ficticias.
@@ -50,34 +58,34 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - [x] **RF-09, RF-12** Calcular en backend el total a partir de las unidades y precios registrados; registrar ventas aprobadas, detalles, pago e inventario de forma transaccional.
 - [x] **RF-10** Calcular en backend el cambio para pagos en efectivo.
-- **Parcial** — **RF-11** El backend admite resultados simulados aprobados y rechazados para débito y crédito; falta implementar su selección y resultado en móvil.
-- **Parcial** — **RF-12** Las ventas aprobadas se persisten de forma transaccional y se rechazan unidades inválidas/no disponibles; falta verificar el rechazo dentro del flujo móvil.
-- **Parcial** — **RF-08** La API acepta varias unidades en una venta; falta el carrito móvil para seleccionarlas y quitarlas.
-- [ ] **RF-08** Implementar carrito móvil para agregar y quitar una o varias unidades disponibles.
-- [ ] **RF-10** Implementar la pantalla móvil de pago en efectivo y captura del monto recibido.
-- [ ] **RF-11** Implementar la selección del resultado aprobado/rechazado para débito y crédito, sin solicitar datos bancarios.
+- **Parcial** — **RF-11** El backend y la app ya admiten escenarios aprobados/rechazados para débito y crédito sin datos bancarios; falta verificar el flujo completo en Expo Go.
+- **Parcial** — **RF-12** Las ventas aprobadas se persisten transaccionalmente y el rechazo del backend no escribe datos; falta verificar rechazo e inventario sin cambios desde la app.
+- **Parcial** — **RF-08** La API y el carrito móvil admiten varias unidades; falta verificar agregar/quitar unidades y completar el recorrido en Expo Go.
+- [ ] **RF-08** Verificar en Expo Go el carrito móvil para agregar y quitar una o varias unidades disponibles.
+- [ ] **RF-10** Verificar en Expo Go el pago en efectivo y la captura del monto recibido.
+- [ ] **RF-11** Verificar en Expo Go la selección de aprobación/rechazo para débito y crédito, sin solicitar datos bancarios.
 - [x] **RF-11** Implementar en backend el escenario de tarjeta rechazada y asegurar que no cree venta, pago ni cambie inventario.
-- [ ] **RF-12** Mostrar en la app el resultado de venta aprobada o pago rechazado.
-- [ ] **RF-13** Añadir consulta API de historial y detalle de ventas con permisos por rol.
-- [ ] **RF-13** Implementar historial móvil: ventas autorizadas para administrador y ventas propias para vendedor.
+- [ ] **RF-12** Verificar en Expo Go el resultado de venta aprobada o pago rechazado.
+- **Parcial** — **RF-13** API de historial/detalle e interfaz móvil implementadas; pruebas de rol, compilación y análisis estático aprobados. Falta la prueba manual final en Expo Go.
+- [ ] **RF-13** Verificar en Expo Go historial y detalle: administrador ve todas las ventas; vendedor solo las propias.
 - [ ] **RF-12, RF-13** Verificar que pagos rechazados no aparezcan en el historial ni cambien inventario.
 
 ## Semana 4 — Asesor de laptops
 
-- [ ] **RF-15** Crear en la app el formulario de presupuesto y descripción de necesidades.
-- [ ] **RF-15** Permitir requisitos técnicos opcionales: software, resolución, RAM, almacenamiento y GPU.
-- [ ] **RF-16, RF-17** Implementar en backend la consulta de modelos existentes con unidades disponibles y dentro del presupuesto.
-- [ ] **RF-17** Integrar DeepSeek únicamente cuando el usuario solicite una recomendación.
-- [ ] **RF-17** Validar la respuesta contra catálogo, disponibilidad, presupuesto y requisitos obligatorios.
-- [ ] **RF-16** Mostrar hasta tres opciones con coincidencias y limitaciones, sin inventar precios ni especificaciones.
-- [ ] **RF-17** Implementar alternativa por reglas o mensaje de información insuficiente cuando DeepSeek no responda o no haya candidatos.
-- [ ] **RNF-11** Confirmar que no se envíen números de serie ni datos personales al asesor.
+- **Parcial** — **RF-15** Formulario móvil de presupuesto y necesidades implementado; falta verificación manual final.
+- **Parcial** — **RF-15** Requisitos opcionales de software, resolución, RAM, almacenamiento y GPU disponibles; los requisitos almacenados se validan y las especificaciones no registradas se señalan como limitaciones.
+- **Parcial** — **RF-16, RF-17** El backend consulta únicamente modelos existentes con unidades disponibles y dentro del presupuesto; falta validar resultados con el entorno real.
+- **Parcial** — **RF-17** DeepSeek se configura solo en el backend y solo se invoca al solicitar recomendaciones; falta prueba manual final con una clave configurada.
+- **Parcial** — **RF-17** Los IDs se restringen a candidatos elegibles por presupuesto, disponibilidad y requisitos estructurados; falta validar el flujo completo.
+- **Parcial** — **RF-16** Se presentan hasta tres modelos con datos del catálogo, coincidencias y limitaciones; falta revisión manual final.
+- **Parcial** — **RF-17** Si DeepSeek no está configurado, falla o no produce opciones válidas, se usa un ordenamiento local; sin candidatos se informa que no hay resultados.
+- **Parcial** — **RNF-11** No se envían identificadores de usuario ni números de serie; se redactan correos y teléfonos de los campos de texto antes del envío. Falta revisión manual de los datos enviados.
 
 ## Semana 5 — Dashboard, pruebas e integración
 
-- [ ] **RF-14** Implementar el dashboard administrativo con ventas acumuladas completadas, unidades vendidas, unidades disponibles y modelos registrados.
-- [ ] **RF-20** Permitir abrir el historial o listado relacionado desde cada métrica del dashboard.
-- [ ] Completar pruebas de API, reglas de negocio y permisos por rol.
+- **Parcial** — **RF-14** Dashboard administrativo implementado con las cuatro métricas y endpoint protegido; falta verificación manual final en Expo Go y revisar valores con datos del entorno.
+- **Parcial** — **RF-20** Cada métrica navega al historial, unidades filtradas o lista de modelos; falta verificación manual final en Expo Go.
+- **Parcial** — Hay pruebas automatizadas para API, reglas de negocio y permisos; faltan pruebas de integración en entorno Supabase y revisión final.
 - [ ] Verificar en Android los flujos completos de administrador y vendedor.
 - [ ] Confirmar manejo controlado de errores de API, Supabase y DeepSeek.
 - [ ] Preparar evidencias de ejecución y pruebas para la demostración final.
@@ -90,25 +98,28 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - [x] La API se ejecuta localmente durante el desarrollo; no desplegarla públicamente en esta etapa.
 - [ ] **RNF-01** Medir tiempos de respuesta con hasta 500 unidades y comprobar el objetivo menor a tres segundos.
 - [x] **RNF-02** Mantener la API local para esta etapa; si se prepara una demostración desplegada, exigir HTTPS.
-- [ ] **RNF-06** Verificar con pruebas que la venta sea atómica y que una unidad no pueda venderse dos veces.
-- [ ] **RNF-07** Confirmar que las credenciales de Supabase y DeepSeek no estén en el código móvil ni en el repositorio.
+- **Parcial** — La venta se ejecuta en transacción y maneja conflictos; faltan pruebas concurrentes que demuestren atomicidad y eviten la doble venta.
+- **Parcial** — Las claves se configuran en backend con User Secrets y no se exponen al cliente móvil; la búsqueda de patrones de claves en archivos versionados no encontró coincidencias. Falta revisión manual final de configuración y versionado.
 - [x] **RNF-09** Probar la aplicación en un dispositivo Android compatible con la versión de Expo utilizada.
-- [ ] **RNF-10** Verificar que el asesor solo recomiende modelos elegibles y no invente precios ni especificaciones.
-- [ ] **RNF-11** Verificar que DeepSeek solo se invoque a petición y no reciba números de serie ni datos personales.
-- [ ] **RNF-12** Verificar que ninguna pantalla de pago solicite datos bancarios reales.
-- [ ] Ejecutar y registrar las pruebas finales de backend y frontend después de completar cada módulo.
+- **Parcial** — **RNF-10** Pruebas automatizadas cubren presupuesto, disponibilidad, requisitos estructurados y uso exclusivo de datos del catálogo; falta revisar las recomendaciones manualmente en Expo Go.
+- **Parcial** — **RNF-11** Pruebas automatizadas verifican invocación bajo demanda y ausencia de números de serie en el payload; falta la verificación manual final de datos transmitidos.
+- **Parcial** — **RNF-12** La pantalla de pago ofrece resultados simulados y solo captura efectivo; la revisión del código no encontró campos de tarjeta. Falta confirmar el flujo visualmente en Expo Go.
+- [x] Ejecutar pruebas automatizadas de backend y frontend después de cada módulo implementado.
 
 ## Verificación técnica más reciente
 
-Comprobaciones ejecutadas el 19-11-2026:
+Comprobaciones más recientes de esta sesión:
 
 - [x] `npm run typecheck` y `npm run lint` en `mobile/`.
-- [x] `dotnet test CaelestiaPOS.sln` — 40 pruebas aprobadas.
+- [x] `dotnet test CaelestiaPOS.sln` — 53 pruebas aprobadas.
 - [x] `python3 -m unittest discover -s tests` — 2 pruebas aprobadas.
 - [x] `npx expo-doctor` — 20/20 comprobaciones.
 - [x] `npx expo export --platform android`.
 - [x] Prueba integrada en dispositivo Android mediante Expo Go: sesión de administrador, catálogo, gestión de vendedores, marcas, modelos y unidades, creación/activación de vendedor, cambio de contraseña y persistencia de sesión. Verificada el 19-11-2026.
+- [x] Historial RF-13: `dotnet test CaelestiaPOS.sln` — 42 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
+- [x] Asesor RF-15–RF-17: `dotnet test CaelestiaPOS.sln` — 47 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
+- [x] RF-21: pruebas backend (53 totales), `npm run typecheck`, `npm run lint`, `npx expo-doctor` (20/20) y `npx expo export --platform android` aprobados. Lint conserva solo la advertencia generada en `.expo/types/router.d.ts`.
 
 ## Próximo paso
 
-Continuar con el flujo móvil de ventas: carrito, pago simulado y resultado, empezando por implementar en backend el escenario de pago con tarjeta rechazado. No registrar ventas reales ni inventar unidades.
+Configurar el bucket público `catalog-images` y `Supabase:ServiceRoleKey` en User Secrets; probar la carga RF-21 en Expo Go y después ejecutar la ronda manual consolidada. La prueba de venta requiere unidades reales disponibles; no crear ni vender datos ficticios.
