@@ -14,6 +14,7 @@ public sealed class SalesController(ISaleService saleService) : ControllerBase
     [HttpPost]
     [ProducesResponseType<SaleResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<SaleResponse>> Create(
@@ -33,6 +34,13 @@ public sealed class SalesController(ISaleService saleService) : ControllerBase
                 {
                     Title = error,
                     Status = StatusCodes.Status400BadRequest
+                }),
+            SaleCreateResult.PaymentRejected =>
+                UnprocessableEntity(new ProblemDetails
+                {
+                    Title = error,
+                    Status = StatusCodes.Status422UnprocessableEntity,
+                    Extensions = { ["code"] = "PAYMENT_REJECTED" }
                 }),
             SaleCreateResult.UnitNotFound =>
                 NotFound(new ProblemDetails

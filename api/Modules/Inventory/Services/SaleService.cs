@@ -25,6 +25,23 @@ public sealed class SaleService(AppDbContext dbContext) : ISaleService
             return (SaleCreateResult.InvalidUnits, null, "La venta requiere unidades válidas y sin duplicados.");
         }
 
+        if (!SalePaymentRules.TryEvaluateCardPayment(
+                request.PaymentMethod,
+                request.SimulatedCardResult,
+                out var isPaymentApproved,
+                out var paymentSelectionError))
+        {
+            return (SaleCreateResult.InvalidPayment, null, paymentSelectionError);
+        }
+
+        if (!isPaymentApproved)
+        {
+            return (
+                SaleCreateResult.PaymentRejected,
+                null,
+                "El pago con tarjeta fue rechazado. No se registraron ventas ni se modificó el inventario.");
+        }
+
         await using var transaction = await dbContext.Database.BeginTransactionAsync(
             IsolationLevel.Serializable,
             cancellationToken);

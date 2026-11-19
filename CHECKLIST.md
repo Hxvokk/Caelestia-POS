@@ -50,13 +50,13 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - [x] **RF-09, RF-12** Calcular en backend el total a partir de las unidades y precios registrados; registrar ventas aprobadas, detalles, pago e inventario de forma transaccional.
 - [x] **RF-10** Calcular en backend el cambio para pagos en efectivo.
-- **Parcial** — **RF-11** No se solicitan datos bancarios, pero falta implementar los resultados simulados de aprobación y rechazo para débito y crédito.
-- **Parcial** — **RF-12** Las ventas aprobadas se persisten de forma transaccional y se rechazan unidades inválidas/no disponibles; falta probar el rechazo de pago simulado sin escrituras.
+- **Parcial** — **RF-11** El backend admite resultados simulados aprobados y rechazados para débito y crédito; falta implementar su selección y resultado en móvil.
+- **Parcial** — **RF-12** Las ventas aprobadas se persisten de forma transaccional y se rechazan unidades inválidas/no disponibles; falta verificar el rechazo dentro del flujo móvil.
 - **Parcial** — **RF-08** La API acepta varias unidades en una venta; falta el carrito móvil para seleccionarlas y quitarlas.
 - [ ] **RF-08** Implementar carrito móvil para agregar y quitar una o varias unidades disponibles.
 - [ ] **RF-10** Implementar la pantalla móvil de pago en efectivo y captura del monto recibido.
 - [ ] **RF-11** Implementar la selección del resultado aprobado/rechazado para débito y crédito, sin solicitar datos bancarios.
-- [ ] **RF-11** Implementar en backend el escenario de tarjeta rechazada y asegurar que no cree venta, pago ni cambie inventario.
+- [x] **RF-11** Implementar en backend el escenario de tarjeta rechazada y asegurar que no cree venta, pago ni cambie inventario.
 - [ ] **RF-12** Mostrar en la app el resultado de venta aprobada o pago rechazado.
 - [ ] **RF-13** Añadir consulta API de historial y detalle de ventas con permisos por rol.
 - [ ] **RF-13** Implementar historial móvil: ventas autorizadas para administrador y ventas propias para vendedor.
@@ -100,10 +100,10 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 ## Verificación técnica más reciente
 
-Comprobaciones ejecutadas el 17-11-2026:
+Comprobaciones ejecutadas el 19-11-2026:
 
 - [x] `npm run typecheck` y `npm run lint` en `mobile/`.
-- [x] `dotnet test CaelestiaPOS.sln` — 29 pruebas aprobadas.
+- [x] `dotnet test CaelestiaPOS.sln` — 40 pruebas aprobadas.
 - [x] `python3 -m unittest discover -s tests` — 2 pruebas aprobadas.
 - [x] `npx expo-doctor` — 20/20 comprobaciones.
 - [x] `npx expo export --platform android`.

@@ -9,6 +9,7 @@ public enum SaleCreateResult
     UnitNotFound,
     UnitUnavailable,
     InvalidPayment,
+    PaymentRejected,
     Conflict
 }
 

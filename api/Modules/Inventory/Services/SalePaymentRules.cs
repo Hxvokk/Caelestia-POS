@@ -6,6 +6,47 @@ public sealed record SalePaymentCalculation(
 
 public static class SalePaymentRules
 {
+    public static bool TryEvaluateCardPayment(
+        string method,
+        string? simulatedCardResult,
+        out bool isApproved,
+        out string error)
+    {
+        isApproved = true;
+        error = string.Empty;
+
+        if (method is not ("efectivo" or "debito" or "credito"))
+        {
+            error = "El método de pago no es válido.";
+            return false;
+        }
+
+        if (method == "efectivo")
+        {
+            if (simulatedCardResult is not null)
+            {
+                error = "El resultado simulado solo se aplica a pagos con tarjeta.";
+                return false;
+            }
+
+            return true;
+        }
+
+        if (simulatedCardResult is null or "aprobado")
+        {
+            return true;
+        }
+
+        if (simulatedCardResult == "rechazado")
+        {
+            isApproved = false;
+            return true;
+        }
+
+        error = "El resultado simulado de la tarjeta no es válido.";
+        return false;
+    }
+
     public static bool TryCalculate(
         string method,
         decimal total,

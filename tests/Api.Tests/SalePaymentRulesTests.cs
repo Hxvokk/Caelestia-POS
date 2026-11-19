@@ -5,6 +5,80 @@ namespace Api.Tests;
 
 public sealed class SalePaymentRulesTests
 {
+    [Theory]
+    [InlineData("debito")]
+    [InlineData("credito")]
+    public void CardPaymentCanSimulateRejection(string method)
+    {
+        var valid = SalePaymentRules.TryEvaluateCardPayment(
+            method,
+            "rechazado",
+            out var isApproved,
+            out var error);
+
+        Assert.True(valid);
+        Assert.False(isApproved);
+        Assert.Empty(error);
+    }
+
+    [Theory]
+    [InlineData("debito")]
+    [InlineData("credito")]
+    public void CardPaymentDefaultsToApprovalWhenNoResultIsSpecified(string method)
+    {
+        var valid = SalePaymentRules.TryEvaluateCardPayment(
+            method,
+            null,
+            out var isApproved,
+            out var error);
+
+        Assert.True(valid);
+        Assert.True(isApproved);
+        Assert.Empty(error);
+    }
+
+    [Theory]
+    [InlineData("debito")]
+    [InlineData("credito")]
+    public void CardPaymentCanSimulateApproval(string method)
+    {
+        var valid = SalePaymentRules.TryEvaluateCardPayment(
+            method,
+            "aprobado",
+            out var isApproved,
+            out var error);
+
+        Assert.True(valid);
+        Assert.True(isApproved);
+        Assert.Empty(error);
+    }
+
+    [Fact]
+    public void RejectsUnknownSimulatedCardResult()
+    {
+        var valid = SalePaymentRules.TryEvaluateCardPayment(
+            "credito",
+            "pendiente",
+            out _,
+            out var error);
+
+        Assert.False(valid);
+        Assert.Equal("El resultado simulado de la tarjeta no es válido.", error);
+    }
+
+    [Fact]
+    public void CardResultIsInvalidForCashPayments()
+    {
+        var valid = SalePaymentRules.TryEvaluateCardPayment(
+            "efectivo",
+            "rechazado",
+            out _,
+            out var error);
+
+        Assert.False(valid);
+        Assert.Equal("El resultado simulado solo se aplica a pagos con tarjeta.", error);
+    }
+
     [Fact]
     public void CashPaymentCalculatesChange()
     {
