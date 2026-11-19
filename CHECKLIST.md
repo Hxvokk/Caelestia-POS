@@ -16,8 +16,8 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - Configurar el bucket público `catalog-images` y `Supabase:ServiceRoleKey`; probar la carga RF-21 desde Expo Go. El cambio está dividido en [API/almacenamiento (#1)](https://github.com/Hxvokk/Caelestia-POS/pull/1) y [móvil/checklist (#2)](https://github.com/Hxvokk/Caelestia-POS/pull/2).
 - Completar la ronda manual en Expo Go para catálogo, roles, ventas, historial, dashboard y asesor. No registrar ventas durante la prueba sin unidades reales disponibles.
-- Medir el rendimiento con hasta 500 unidades y documentar el resultado; no se ha ejecutado una medición con datos representativos.
-- Completar verificación concurrente de venta atómica y ausencia de doble venta; el backend usa transacción serializable y bloqueo de filas, pero falta una prueba concurrente.
+- Medir el rendimiento con hasta 500 unidades y documentar el resultado; no se ha ejecutado una medición con datos representativos. El daemon de Docker no está activo para levantar una base desechable.
+- Completar verificación concurrente de venta atómica y ausencia de doble venta; el backend usa transacción serializable y bloqueo de filas, pero falta una prueba concurrente. El daemon de Docker no está activo y no se iniciaron servicios externos ni se tocaron datos reales.
 - Cerrar revisión de seguridad, manejo de errores externos, datos bancarios y evidencias para la demostración.
 
 ## Semana 1 — Definición y planeación
