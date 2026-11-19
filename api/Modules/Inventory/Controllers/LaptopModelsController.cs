@@ -8,7 +8,9 @@ namespace Api.Modules.Inventory.Controllers;
 [ApiController]
 [Route("api/laptops")]
 [Authorize]
-public sealed class LaptopModelsController(ILaptopModelService modelService) : ControllerBase
+public sealed class LaptopModelsController(
+    ILaptopModelService modelService,
+    IModelImageService modelImageService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType<IReadOnlyList<LaptopModelResponse>>(StatusCodes.Status200OK)]
@@ -108,6 +110,43 @@ public sealed class LaptopModelsController(ILaptopModelService modelService) : C
                 Status = StatusCodes.Status409Conflict
             }),
             _ => NoContent()
+        };
+    }
+
+    [HttpPost("{id:long}/image")]
+    [Authorize(Roles = "administrador")]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(ModelImageFileValidator.MaximumFileSizeBytes + 64 * 1024)]
+    [ProducesResponseType<ModelImageResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status503ServiceUnavailable)]
+    public async Task<ActionResult<ModelImageResponse>> UploadImage(
+        long id,
+        [FromForm] IFormFile? file,
+        CancellationToken cancellationToken)
+    {
+        var (result, image) = await modelImageService.UploadAsync(id, file, cancellationToken);
+        return result switch
+        {
+            ModelImageWriteResult.ModelNotFound => NotFound(new ProblemDetails
+            {
+                Title = "No se encontró el modelo indicado.",
+                Status = StatusCodes.Status404NotFound
+            }),
+            ModelImageWriteResult.InvalidImage => BadRequest(new ProblemDetails
+            {
+                Title = "Selecciona una imagen JPEG, PNG o WebP de hasta 5 MB.",
+                Status = StatusCodes.Status400BadRequest
+            }),
+            ModelImageWriteResult.StorageUnavailable => StatusCode(
+                StatusCodes.Status503ServiceUnavailable,
+                new ProblemDetails
+                {
+                    Title = "No se pudo guardar la imagen. Revisa la configuración de almacenamiento.",
+                    Status = StatusCodes.Status503ServiceUnavailable
+                }),
+            _ => Ok(image)
         };
     }
 }

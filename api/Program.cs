@@ -121,6 +121,8 @@ builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<ILaptopModelRepository, LaptopModelRepository>();
 builder.Services.AddScoped<ILaptopModelService, LaptopModelService>();
+builder.Services.AddScoped<IModelImageService, ModelImageService>();
+builder.Services.AddHttpClient<IModelImageStorage, SupabaseModelImageStorage>();
 builder.Services.AddScoped<ILaptopUnitRepository, LaptopUnitRepository>();
 builder.Services.AddScoped<ILaptopUnitService, LaptopUnitService>();
 builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();

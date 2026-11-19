@@ -33,6 +33,8 @@ Requisitos: .NET SDK 11.
 
    La clave secreta o `service_role` debe utilizarse únicamente en el backend. No incluirla en `mobile/`, `.env.local`, el código fuente ni Git. Sin esta configuración, los endpoints administrativos de usuarios responden `503`.
 
+5. Para adjuntar imágenes a modelos, crear en **Storage** un bucket público llamado `catalog-images`. El backend lo usa para guardar imágenes JPEG, PNG o WebP de hasta 5 MB. La clave `Supabase:ServiceRoleKey` se utiliza solo desde el backend; no incluirla en la app móvil. La carga requiere que la URL del proyecto y la clave de servicio estén configuradas.
+
 ### Ejecutar y comprobar
 
 Desde la raíz del repositorio:
@@ -52,6 +54,7 @@ Abrir la dirección local que aparece en la terminal y añadir `/swagger`. Desde
 - `/api/laptops` permite consultar, filtrar, registrar, modificar y eliminar modelos sin unidades asociadas.
 - `/api/units` permite consultar, registrar, modificar y eliminar unidades por número de serie; las unidades vendidas o con historial no se pueden modificar ni eliminar.
 - `POST /api/sales` registra una venta de una o más unidades existentes con pago simulado, conserva el precio vendido y marca las unidades como vendidas en una transacción.
+- `POST /api/laptops/{id}/image` adjunta una imagen al modelo indicado; requiere rol `administrador` y el bucket público `catalog-images`.
 
 El cliente móvil consulta `/api/laptops` y `/api/units` después de iniciar sesión. El catálogo muestra la imagen, la marca, el SKU, el precio y las especificaciones disponibles.
 
