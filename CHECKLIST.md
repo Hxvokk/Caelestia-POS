@@ -87,7 +87,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - **Parcial** — **RF-20** Cada métrica navega al historial, unidades filtradas o lista de modelos; falta verificación manual final en Expo Go.
 - **Parcial** — Hay pruebas automatizadas para API, reglas de negocio y permisos; faltan pruebas de integración en entorno Supabase y revisión final.
 - [ ] Verificar en Android los flujos completos de administrador y vendedor.
-- [ ] Confirmar manejo controlado de errores de API, Supabase y DeepSeek.
+- **Parcial** — Pruebas automatizadas cubren respuestas fallidas/malformadas de DeepSeek y errores/configuración ausente de Supabase Storage; falta verificar errores visibles en los flujos móviles y la conexión real.
 - [ ] Preparar evidencias de ejecución y pruebas para la demostración final.
 
 ## Requisitos no funcionales y cierre
@@ -111,7 +111,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 Comprobaciones más recientes de esta sesión:
 
 - [x] `npm run typecheck` y `npm run lint` en `mobile/`.
-- [x] `dotnet test CaelestiaPOS.sln` — 53 pruebas aprobadas.
+- [x] `dotnet test CaelestiaPOS.sln` — 63 pruebas aprobadas.
 - [x] `python3 -m unittest discover -s tests` — 2 pruebas aprobadas.
 - [x] `npx expo-doctor` — 20/20 comprobaciones.
 - [x] `npx expo export --platform android`.
@@ -119,6 +119,7 @@ Comprobaciones más recientes de esta sesión:
 - [x] Historial RF-13: `dotnet test CaelestiaPOS.sln` — 42 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
 - [x] Asesor RF-15–RF-17: `dotnet test CaelestiaPOS.sln` — 47 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
 - [x] RF-21: pruebas backend (53 totales), `npm run typecheck`, `npm run lint`, `npx expo-doctor` (20/20) y `npx expo export --platform android` aprobados. Lint conserva solo la advertencia generada en `.expo/types/router.d.ts`.
+- [x] Errores de DeepSeek y Supabase Storage: `dotnet test CaelestiaPOS.sln` — 63 pruebas aprobadas, incluyendo fallback/respuestas externas no exitosas.
 
 ## Próximo paso
 

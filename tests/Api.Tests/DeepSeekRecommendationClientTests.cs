@@ -51,23 +51,80 @@ public sealed class DeepSeekRecommendationClientTests
         Assert.Equal("Bearer test-server-key", handler.Authorization);
     }
 
-    private sealed class CapturingHandler : HttpMessageHandler
+    [Theory]
+    [InlineData(HttpStatusCode.TooManyRequests)]
+    [InlineData(HttpStatusCode.InternalServerError)]
+    public async Task ReturnsNullWhenDeepSeekReturnsAnErrorStatus(HttpStatusCode statusCode)
+    {
+        var handler = new CapturingHandler(statusCode, """{"error":"unavailable"}""");
+        using var httpClient = new HttpClient(handler);
+        var client = CreateClient(httpClient, apiKey: "test-server-key");
+
+        var ranking = await client.RankAsync("study", null, null, [], CancellationToken.None);
+
+        Assert.Null(ranking);
+        Assert.Equal(1, handler.RequestCount);
+    }
+
+    [Fact]
+    public async Task ReturnsNullWhenDeepSeekResponseIsMalformed()
+    {
+        var handler = new CapturingHandler(HttpStatusCode.OK, """{"unexpected":true}""");
+        using var httpClient = new HttpClient(handler);
+        var client = CreateClient(httpClient, apiKey: "test-server-key");
+
+        var ranking = await client.RankAsync("study", null, null, [], CancellationToken.None);
+
+        Assert.Null(ranking);
+    }
+
+    [Fact]
+    public async Task DoesNotCallDeepSeekWhenApiKeyIsNotConfigured()
+    {
+        var handler = new CapturingHandler();
+        using var httpClient = new HttpClient(handler);
+        var client = CreateClient(httpClient, apiKey: null);
+
+        var ranking = await client.RankAsync("study", null, null, [], CancellationToken.None);
+
+        Assert.Null(ranking);
+        Assert.Equal(0, handler.RequestCount);
+    }
+
+    private static DeepSeekRecommendationClient CreateClient(HttpClient httpClient, string? apiKey)
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["DeepSeek:ApiKey"] = apiKey
+            })
+            .Build();
+
+        return new DeepSeekRecommendationClient(
+            httpClient,
+            configuration,
+            NullLogger<DeepSeekRecommendationClient>.Instance);
+    }
+
+    private sealed class CapturingHandler(
+        HttpStatusCode statusCode = HttpStatusCode.OK,
+        string responseBody = """{"choices":[{"message":{"content":"{\"modelIds\":[7]}"}}]}""")
+        : HttpMessageHandler
     {
         public string RequestBody { get; private set; } = string.Empty;
         public string? Authorization { get; private set; }
+        public int RequestCount { get; private set; }
 
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
+            RequestCount++;
             RequestBody = await request.Content!.ReadAsStringAsync(cancellationToken);
             Authorization = request.Headers.Authorization?.ToString();
-            return new HttpResponseMessage(HttpStatusCode.OK)
+            return new HttpResponseMessage(statusCode)
             {
-                Content = new StringContent(
-                    """{"choices":[{"message":{"content":"{\"modelIds\":[7]}"}}]}""",
-                    Encoding.UTF8,
-                    "application/json")
+                Content = new StringContent(responseBody, Encoding.UTF8, "application/json")
             };
         }
     }
