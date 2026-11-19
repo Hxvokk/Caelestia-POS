@@ -78,7 +78,13 @@ El cliente obtiene el `access_token` mediante Supabase Auth y lo envía como `Au
 
 Para comprobar el inicio de sesión y el perfil sin copiar el token en Swagger, iniciar la API con `dotnet run --project api/Api.csproj --launch-profile http` y, en otra terminal, ejecutar `python3 scripts/verify_supabase_auth.py`. El script solicita la clave Publishable/anon y la contraseña de forma oculta; solo consulta `GET /api/units` y no imprime el token ni modifica datos. Para utilizar otro puerto local, definir `CAELESTIA_API_URL` antes de ejecutarlo.
 
-Las pruebas se ejecutan desde la raíz con `dotnet test CaelestiaPOS.sln`.
+Las pruebas unitarias se ejecutan desde la raíz con `dotnet test CaelestiaPOS.sln`. Para correr las pruebas de integración de venta concurrente y rendimiento, inicia Docker u OrbStack y ejecuta:
+
+```sh
+CAELESTIA_RUN_POSTGRES_TESTS=1 dotnet test tests/Api.Tests/Api.Tests.csproj --filter FullyQualifiedName~PostgreSqlIntegrationTests
+```
+
+Estas pruebas crean una instancia temporal de PostgreSQL, utilizan únicamente fixtures sintéticos aislados y eliminan el contenedor al terminar. No se conectan a Supabase ni alteran inventario comercial.
 
 ### Esquema inicial de Supabase
 

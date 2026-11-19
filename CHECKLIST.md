@@ -16,8 +16,7 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - Configurar el bucket público `catalog-images` y `Supabase:ServiceRoleKey`; probar la carga RF-21 desde Expo Go. El cambio está dividido en [API/almacenamiento (#1)](https://github.com/Hxvokk/Caelestia-POS/pull/1) y [móvil/checklist (#2)](https://github.com/Hxvokk/Caelestia-POS/pull/2).
 - Completar la ronda manual en Expo Go para catálogo, roles, ventas, historial, dashboard y asesor. No registrar ventas durante la prueba sin unidades reales disponibles.
-- Medir el rendimiento con hasta 500 unidades y documentar el resultado; no se ha ejecutado una medición con datos representativos. El daemon de Docker no está activo para levantar una base desechable.
-- Completar verificación concurrente de venta atómica y ausencia de doble venta; el backend usa transacción serializable y bloqueo de filas, pero falta una prueba concurrente. El daemon de Docker no está activo y no se iniciaron servicios externos ni se tocaron datos reales.
+- Completar la medición de extremo a extremo desde Expo Go/API/Supabase con 500 unidades; la consulta de backend con 500 fixtures en PostgreSQL temporal ya quedó bajo el límite de 3 s, pero no mide red ni el entorno Supabase.
 - Cerrar revisión de seguridad, manejo de errores externos, datos bancarios y evidencias para la demostración.
 
 ## Semana 1 — Definición y planeación
@@ -96,9 +95,9 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 - **Parcial** — **RNF-04, RNF-08** La app tiene formularios validados, estados de carga y mensajes de error en los flujos existentes; falta cubrir las pantallas aún pendientes.
 - [x] **RNF-03** Las contraseñas se gestionan con Supabase Auth y no se guardan en las tablas comerciales.
 - [x] La API se ejecuta localmente durante el desarrollo; no desplegarla públicamente en esta etapa.
-- [ ] **RNF-01** Medir tiempos de respuesta con hasta 500 unidades y comprobar el objetivo menor a tres segundos.
+- **Parcial** — **RNF-01** La consulta backend de 500 unidades sintéticas en PostgreSQL temporal cumple el objetivo menor a 3 s; falta medir la respuesta de extremo a extremo con Expo Go/API/Supabase.
 - [x] **RNF-02** Mantener la API local para esta etapa; si se prepara una demostración desplegada, exigir HTTPS.
-- **Parcial** — La venta se ejecuta en transacción y maneja conflictos; faltan pruebas concurrentes que demuestren atomicidad y eviten la doble venta.
+- [x] **RNF-06** Prueba de integración con dos solicitudes concurrentes para una unidad en PostgreSQL temporal: una venta queda registrada, la otra entra en conflicto y solo hay un detalle/pago.
 - **Parcial** — Las claves se configuran en backend con User Secrets y no se exponen al cliente móvil; la búsqueda de patrones de claves en archivos versionados no encontró coincidencias. Falta revisión manual final de configuración y versionado.
 - [x] **RNF-09** Probar la aplicación en un dispositivo Android compatible con la versión de Expo utilizada.
 - **Parcial** — **RNF-10** Pruebas automatizadas cubren presupuesto, disponibilidad, requisitos estructurados y uso exclusivo de datos del catálogo; falta revisar las recomendaciones manualmente en Expo Go.
@@ -111,7 +110,8 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 Comprobaciones más recientes de esta sesión:
 
 - [x] `npm run typecheck` y `npm run lint` en `mobile/`.
-- [x] `dotnet test CaelestiaPOS.sln` — 63 pruebas aprobadas.
+- [x] `dotnet test CaelestiaPOS.sln` — 63 aprobadas y 2 pruebas PostgreSQL opt-in omitidas por defecto.
+- [x] `CAELESTIA_RUN_POSTGRES_TESTS=1 dotnet test tests/Api.Tests/Api.Tests.csproj --filter FullyQualifiedName~PostgreSqlIntegrationTests` — 2 pruebas aprobadas: doble venta concurrente y consulta de 500 unidades menor a 3 s.
 - [x] `python3 -m unittest discover -s tests` — 2 pruebas aprobadas.
 - [x] `npx expo-doctor` — 20/20 comprobaciones.
 - [x] `npx expo export --platform android`.
@@ -120,6 +120,7 @@ Comprobaciones más recientes de esta sesión:
 - [x] Asesor RF-15–RF-17: `dotnet test CaelestiaPOS.sln` — 47 pruebas aprobadas; `npm run typecheck`, `npm run lint` y `npx expo export --platform android` aprobados. La advertencia restante de lint es solo para `.expo/types/router.d.ts`.
 - [x] RF-21: pruebas backend (53 totales), `npm run typecheck`, `npm run lint`, `npx expo-doctor` (20/20) y `npx expo export --platform android` aprobados. Lint conserva solo la advertencia generada en `.expo/types/router.d.ts`.
 - [x] Errores de DeepSeek y Supabase Storage: `dotnet test CaelestiaPOS.sln` — 63 pruebas aprobadas, incluyendo fallback/respuestas externas no exitosas.
+- [x] Seguridad de dependencias de tests: `dotnet list tests/Api.Tests/Api.Tests.csproj package --vulnerable --include-transitive` — no se reportaron paquetes vulnerables.
 
 ## Próximo paso
 
