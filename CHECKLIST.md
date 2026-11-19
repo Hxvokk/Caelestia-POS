@@ -50,14 +50,14 @@ Guía de avance basada únicamente en [Caelestia POS - Documentación](Documenta
 
 - [x] **RF-09, RF-12** Calcular en backend el total a partir de las unidades y precios registrados; registrar ventas aprobadas, detalles, pago e inventario de forma transaccional.
 - [x] **RF-10** Calcular en backend el cambio para pagos en efectivo.
-- **Parcial** — **RF-11** El backend admite resultados simulados aprobados y rechazados para débito y crédito; falta implementar su selección y resultado en móvil.
-- **Parcial** — **RF-12** Las ventas aprobadas se persisten de forma transaccional y se rechazan unidades inválidas/no disponibles; falta verificar el rechazo dentro del flujo móvil.
-- **Parcial** — **RF-08** La API acepta varias unidades en una venta; falta el carrito móvil para seleccionarlas y quitarlas.
-- [ ] **RF-08** Implementar carrito móvil para agregar y quitar una o varias unidades disponibles.
-- [ ] **RF-10** Implementar la pantalla móvil de pago en efectivo y captura del monto recibido.
-- [ ] **RF-11** Implementar la selección del resultado aprobado/rechazado para débito y crédito, sin solicitar datos bancarios.
+- **Parcial** — **RF-11** El backend y la app ya admiten escenarios aprobados/rechazados para débito y crédito sin datos bancarios; falta verificar el flujo completo en Expo Go.
+- **Parcial** — **RF-12** Las ventas aprobadas se persisten transaccionalmente y el rechazo del backend no escribe datos; falta verificar rechazo e inventario sin cambios desde la app.
+- **Parcial** — **RF-08** La API y el carrito móvil admiten varias unidades; falta verificar agregar/quitar unidades y completar el recorrido en Expo Go.
+- [ ] **RF-08** Verificar en Expo Go el carrito móvil para agregar y quitar una o varias unidades disponibles.
+- [ ] **RF-10** Verificar en Expo Go el pago en efectivo y la captura del monto recibido.
+- [ ] **RF-11** Verificar en Expo Go la selección de aprobación/rechazo para débito y crédito, sin solicitar datos bancarios.
 - [x] **RF-11** Implementar en backend el escenario de tarjeta rechazada y asegurar que no cree venta, pago ni cambie inventario.
-- [ ] **RF-12** Mostrar en la app el resultado de venta aprobada o pago rechazado.
+- [ ] **RF-12** Verificar en Expo Go el resultado de venta aprobada o pago rechazado.
 - [ ] **RF-13** Añadir consulta API de historial y detalle de ventas con permisos por rol.
 - [ ] **RF-13** Implementar historial móvil: ventas autorizadas para administrador y ventas propias para vendedor.
 - [ ] **RF-12, RF-13** Verificar que pagos rechazados no aparezcan en el historial ni cambien inventario.

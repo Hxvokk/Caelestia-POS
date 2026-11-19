@@ -17,6 +17,7 @@ import { supabase } from "../../../shared/auth/supabase";
 import { getCurrentUser } from "../../../shared/api/accountApi";
 import { getApiErrorMessage } from "../../../shared/api/client";
 import { getBrands, getLaptopModels, getLaptopUnits } from "../../../shared/api/inventoryApi";
+import { useCartStore } from "../../sales/store/cartStore";
 import type {
   Brand,
   LaptopModel,
@@ -53,6 +54,7 @@ function formatModelMemory(model: LaptopModel): string {
 export function ModelCatalogScreen() {
   const currentUser = useSessionStore((state) => state.currentUser);
   const setCurrentUser = useSessionStore((state) => state.setCurrentUser);
+  const cartCount = useCartStore((state) => state.items.length);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [models, setModels] = useState<LaptopModel[]>([]);
   const [units, setUnits] = useState<LaptopUnit[]>([]);
@@ -216,6 +218,21 @@ export function ModelCatalogScreen() {
                 <Text style={styles.adminButtonText}>Administrar inventario</Text>
               </Pressable>
             ) : null}
+
+            <Pressable
+              accessibilityLabel={`Carrito de venta, ${cartCount} unidades`}
+              accessibilityRole="button"
+              onPress={() => router.push("/cart")}
+              style={styles.cartButton}
+            >
+              <View>
+                <Text style={styles.cartButtonTitle}>Carrito de venta</Text>
+                <Text style={styles.cartButtonSubtitle}>
+                  {cartCount} de 20 unidades seleccionadas
+                </Text>
+              </View>
+              <Text style={styles.cartButtonAction}>Ver carrito ›</Text>
+            </Pressable>
 
             <Text style={styles.sectionLabel}>Buscar modelo o marca</Text>
             <TextInput
@@ -410,6 +427,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.text,
   },
   adminButtonText: { color: colors.surface, fontWeight: "700" },
+  cartButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 11,
+    backgroundColor: colors.surface,
+  },
+  cartButtonTitle: { color: colors.text, fontSize: 14, fontWeight: "700" },
+  cartButtonSubtitle: { marginTop: 3, color: colors.muted, fontSize: 12 },
+  cartButtonAction: { color: colors.primary, fontSize: 13, fontWeight: "700" },
   sectionLabel: { marginTop: spacing.sm, marginBottom: spacing.xs, color: colors.text, fontWeight: "700" },
   searchInput: {
     minHeight: 46,

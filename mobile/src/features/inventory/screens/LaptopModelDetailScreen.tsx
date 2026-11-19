@@ -15,17 +15,15 @@ import type { LaptopModel, LaptopUnit } from "../../../shared/api/types";
 import { colors, spacing } from "../../../shared/config/theme";
 import { ScreenState } from "../../../shared/ui/ScreenState";
 import { useSessionStore } from "../../auth/store/sessionStore";
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-  }).format(price);
-}
+import { MAX_CART_ITEMS, useCartStore } from "../../sales/store/cartStore";
+import { formatPrice } from "../../sales/utils/formatPrice";
 
 export function LaptopModelDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const currentUser = useSessionStore((state) => state.currentUser);
+  const cartItems = useCartStore((state) => state.items);
+  const addItem = useCartStore((state) => state.addItem);
+  const removeItem = useCartStore((state) => state.removeItem);
   const [model, setModel] = useState<LaptopModel | null>(null);
   const [availableUnits, setAvailableUnits] = useState<LaptopUnit[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -122,12 +120,51 @@ export function LaptopModelDetailScreen() {
         <View style={styles.specifications}>
           <Text style={styles.unitsTitle}>Unidades físicas disponibles</Text>
           {availableUnits.length > 0 ? (
-            availableUnits.map((unit) => (
-              <View key={unit.id} style={styles.specRow}>
-                <Text style={styles.specLabel}>Número de serie</Text>
-                <Text style={styles.specValue}>{unit.serialNumber}</Text>
-              </View>
-            ))
+            availableUnits.map((unit) => {
+              const isSelected = cartItems.some((item) => item.unitId === unit.id);
+              const cartIsFull = cartItems.length >= MAX_CART_ITEMS && !isSelected;
+
+              return (
+                <View key={unit.id} style={styles.availableUnitRow}>
+                  <View style={styles.unitInfo}>
+                    <Text style={styles.specLabel}>Número de serie</Text>
+                    <Text style={styles.serialNumber}>{unit.serialNumber}</Text>
+                  </View>
+                  <Pressable
+                    accessibilityLabel={
+                      isSelected
+                        ? `Quitar la serie ${unit.serialNumber} del carrito`
+                        : `Agregar la serie ${unit.serialNumber} al carrito`
+                    }
+                    accessibilityRole="button"
+                    disabled={cartIsFull}
+                    onPress={() => {
+                      if (isSelected) {
+                        removeItem(unit.id);
+                      } else {
+                        addItem({
+                          unitId: unit.id,
+                          modelId: model.id,
+                          brandName: model.brandName,
+                          modelName: model.name,
+                          serialNumber: unit.serialNumber,
+                          unitPrice: model.price,
+                        });
+                      }
+                    }}
+                    style={[
+                      styles.unitAction,
+                      isSelected && styles.unitActionSelected,
+                      cartIsFull && styles.unitActionDisabled,
+                    ]}
+                  >
+                    <Text style={[styles.unitActionText, isSelected && styles.unitActionSelectedText]}>
+                      {isSelected ? "Quitar" : cartIsFull ? "Límite alcanzado" : "Agregar"}
+                    </Text>
+                  </Pressable>
+                </View>
+              );
+            })
           ) : (
             <Text style={styles.specLabel}>No hay unidades disponibles para este modelo.</Text>
           )}
@@ -181,6 +218,26 @@ const styles = StyleSheet.create({
   specLabel: { flex: 1, color: colors.muted, fontSize: 14 },
   specValue: { flex: 1, color: colors.text, fontSize: 14, fontWeight: "600", textAlign: "right" },
   unitsTitle: { color: colors.text, fontSize: 16, fontWeight: "700" },
+  availableUnitRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  unitInfo: { flex: 1, gap: 3 },
+  serialNumber: { color: colors.text, fontSize: 14, fontWeight: "600" },
+  unitAction: {
+    minHeight: 40,
+    justifyContent: "center",
+    paddingHorizontal: spacing.md,
+    borderRadius: 9,
+    backgroundColor: colors.primary,
+  },
+  unitActionSelected: { backgroundColor: colors.successBackground },
+  unitActionDisabled: { opacity: 0.55 },
+  unitActionText: { color: colors.surface, fontSize: 12, fontWeight: "700" },
+  unitActionSelectedText: { color: colors.success },
   disclaimer: { color: colors.muted, fontSize: 13, lineHeight: 19 },
   source: { color: colors.muted, fontSize: 12, lineHeight: 18 },
   editButton: { minHeight: 48, alignItems: "center", justifyContent: "center", borderRadius: 10, backgroundColor: colors.primary },
