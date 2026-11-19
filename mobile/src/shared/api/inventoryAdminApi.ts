@@ -36,6 +36,16 @@ export type SaveLaptopUnitRequest = {
   serialNumber: string;
 };
 
+export type ModelImageUploadRequest = {
+  uri: string;
+  mimeType: "image/jpeg" | "image/png" | "image/webp";
+};
+
+export type ModelImageUploadResponse = {
+  imageUrl: string;
+  imageRightsStatus: LaptopModel["imageRightsStatus"];
+};
+
 export async function createBrand(request: SaveBrandRequest): Promise<Brand> {
   const response = await apiClient.post<Brand>("/api/brands", request);
   return response.data;
@@ -61,6 +71,30 @@ export async function updateLaptopModel(
   request: SaveLaptopModelRequest,
 ): Promise<void> {
   await apiClient.put(`/api/laptops/${id}`, request);
+}
+
+export async function uploadLaptopModelImage(
+  id: number,
+  image: ModelImageUploadRequest,
+): Promise<ModelImageUploadResponse> {
+  const formData = new FormData();
+  const extension = image.mimeType === "image/jpeg"
+    ? "jpg"
+    : image.mimeType === "image/png"
+      ? "png"
+      : "webp";
+  formData.append("file", {
+    uri: image.uri,
+    name: `model-image.${extension}`,
+    type: image.mimeType,
+  } as unknown as Blob);
+
+  const response = await apiClient.post<ModelImageUploadResponse>(
+    `/api/laptops/${id}/image`,
+    formData,
+    { headers: { "Content-Type": undefined } },
+  );
+  return response.data;
 }
 
 export async function deleteLaptopModel(id: number): Promise<void> {
