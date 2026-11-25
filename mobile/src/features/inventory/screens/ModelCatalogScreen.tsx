@@ -137,6 +137,7 @@ export function ModelCatalogScreen() {
       modelName: model.name,
       serialNumber: unit.serialNumber,
       unitPrice: model.price,
+      imageUrl: model.imageUrl,
     });
   };
 
@@ -923,8 +924,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: 12,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
   },
   modelInfo: { flex: 1, minWidth: 0, gap: 4 },
   brandBadge: {

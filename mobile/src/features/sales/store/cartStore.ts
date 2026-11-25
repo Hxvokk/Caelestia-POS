@@ -9,6 +9,7 @@ export type CartItem = {
   modelName: string;
   serialNumber: string;
   unitPrice: number;
+  imageUrl?: string | null;
 };
 
 type CartStore = {

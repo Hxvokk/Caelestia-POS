@@ -121,6 +121,7 @@ export function LaptopModelDetailScreen() {
         modelName: model.name,
         serialNumber: unit.serialNumber,
         unitPrice: model.price,
+        imageUrl: model.imageUrl,
       });
     }
     setJustAdded(units.length);
@@ -387,8 +388,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: 18,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
   },
   image: { width: "100%", height: "100%" },
   noImage: { alignItems: "center", gap: spacing.sm },
