@@ -19,6 +19,7 @@ import { getApiErrorMessage } from "../../../shared/api/client";
 import { colors, spacing } from "../../../shared/config/theme";
 import { BrandHeader } from "../../inventory/components/HomeDashboardUI";
 import { useCartStore } from "../store/cartStore";
+import { useLastSaleStore } from "../store/lastSaleStore";
 import { formatPrice } from "../utils/formatPrice";
 
 type IconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -106,6 +107,7 @@ export function CheckoutScreen() {
         amountReceived: received,
         simulatedCardResult: isCardPayment ? cardResult : null,
       });
+      useLastSaleStore.getState().setItems(items);
       clearCart();
       router.replace({
         pathname: "/sales/result",
@@ -119,7 +121,7 @@ export function CheckoutScreen() {
       if (submitError instanceof PaymentRejectedError) {
         router.replace({
           pathname: "/sales/result",
-          params: { status: "rechazado", message: submitError.message },
+          params: { status: "rechazado", message: submitError.message, total: String(total) },
         });
         return;
       }
