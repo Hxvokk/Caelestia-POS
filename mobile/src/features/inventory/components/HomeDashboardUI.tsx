@@ -66,6 +66,41 @@ function CaelestiaBrand() {
   );
 }
 
+export function BrandHeader({
+  title,
+  subtitle,
+  action,
+}: {
+  title: string;
+  subtitle: string;
+  action?: ReactNode;
+}) {
+  return (
+    <View style={styles.header}>
+      <View pointerEvents="none" style={styles.headerArtwork}>
+        <View style={styles.headerSweep} />
+        <View style={styles.headerFacet} />
+        <View style={styles.headerGlow} />
+      </View>
+      <View style={styles.brandRow}>
+        <CaelestiaBrand />
+        {action ?? (
+          <Pressable
+            accessibilityLabel="Abrir perfil"
+            accessibilityRole="button"
+            onPress={() => router.push("/profile")}
+            style={styles.profileButton}
+          >
+            <Ionicons name="person-outline" size={23} color={colors.surface} />
+          </Pressable>
+        )}
+      </View>
+      <Text style={styles.pageTitle}>{title}</Text>
+      <Text style={styles.pageSubtitle}>{subtitle}</Text>
+    </View>
+  );
+}
+
 export function HomeFrame({
   children,
   promoState = "normal",
@@ -75,26 +110,7 @@ export function HomeFrame({
 }) {
   return (
     <SafeAreaView edges={["top"]} style={styles.screen}>
-      <View style={styles.header}>
-        <View pointerEvents="none" style={styles.headerArtwork}>
-          <View style={styles.headerSweep} />
-          <View style={styles.headerFacet} />
-          <View style={styles.headerGlow} />
-        </View>
-        <View style={styles.brandRow}>
-          <CaelestiaBrand />
-          <Pressable
-            accessibilityLabel="Abrir perfil"
-            accessibilityRole="button"
-            onPress={() => router.push("/profile")}
-            style={styles.profileButton}
-          >
-            <Ionicons name="person-outline" size={23} color={colors.surface} />
-          </Pressable>
-        </View>
-        <Text style={styles.pageTitle}>Inicio</Text>
-        <Text style={styles.pageSubtitle}>Gestiona tu punto de venta</Text>
-      </View>
+      <BrandHeader title="Inicio" subtitle="Gestiona tu punto de venta" />
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -190,9 +206,11 @@ export function HomeActionCard({
 export function HomeErrorState({
   message,
   onRetry,
+  title = "No se pudo cargar el inicio",
 }: {
   message: string;
   onRetry: () => void;
+  title?: string;
 }) {
   return (
     <View style={styles.errorState}>
@@ -202,7 +220,7 @@ export function HomeErrorState({
           <Ionicons name="alert" size={17} color={colors.surface} />
         </View>
       </View>
-      <Text style={styles.errorTitle}>No se pudo cargar el inicio</Text>
+      <Text style={styles.errorTitle}>{title}</Text>
       <Text style={styles.errorDescription}>{message}</Text>
       <Pressable
         accessibilityRole="button"
