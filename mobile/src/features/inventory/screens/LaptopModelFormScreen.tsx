@@ -36,16 +36,8 @@ const positiveVram = (value: string) =>
   (/^\d+(\.\d{1,2})?$/.test(value.trim()) &&
     Number(value) > 0 &&
     Number(value) <= 9_999.99);
-const validOptionalUrl = (value: string) => {
-  if (!value.trim()) return true;
-  return /^https?:\/\/[^\s/]+(?:\/[^\s]*)?$/i.test(value.trim());
-};
-const validOptionalDate = (value: string) => {
-  if (!value.trim()) return true;
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const parsedDate = new Date(`${value}T00:00:00Z`);
-  return !Number.isNaN(parsedDate.getTime()) && parsedDate.toISOString().slice(0, 10) === value;
-};
+const isLevel = (value: string) => ["básico", "medio", "alto"].includes(value);
+const levelOptions = ["básico", "medio", "alto"];
 
 const modelFormSchema = z.object({
   brandId: z.string().min(1, "Selecciona una marca."),
@@ -61,12 +53,9 @@ const modelFormSchema = z.object({
   gpu: z.string().max(150),
   gpuType: z.enum(["", "integrada", "dedicada", "híbrida"]),
   gpuVramGb: z.string().refine(positiveVram, "Usa un valor positivo con hasta dos decimales o deja vacío."),
-  cpuLevel: z.enum(["", "básico", "medio", "alto"]),
-  gpuLevel: z.enum(["", "básico", "medio", "alto"]),
+  cpuLevel: z.string().refine(isLevel, "Selecciona el nivel de CPU."),
+  gpuLevel: z.string().refine(isLevel, "Selecciona el nivel de GPU."),
   price: z.string().refine(positiveDecimal, "El precio debe ser positivo y tener hasta dos decimales."),
-  priceSourceUrl: z.string().refine(validOptionalUrl, "Escribe una URL HTTP o HTTPS válida."),
-  priceCheckedOn: z.string().refine(validOptionalDate, "Usa el formato de fecha AAAA-MM-DD."),
-  specificationsSource: z.string(),
 });
 
 type ModelFormValues = z.infer<typeof modelFormSchema>;
@@ -88,9 +77,6 @@ const emptyValues: ModelFormValues = {
   cpuLevel: "",
   gpuLevel: "",
   price: "",
-  priceSourceUrl: "",
-  priceCheckedOn: "",
-  specificationsSource: "",
 };
 
 function optionalNumber(value: string): number | null {
@@ -112,12 +98,9 @@ function modelToFormValues(model: LaptopModel): ModelFormValues {
     gpu: model.gpu ?? "",
     gpuType: model.gpuType === null ? "" : model.gpuType as ModelFormValues["gpuType"],
     gpuVramGb: model.gpuVramGb === null ? "" : String(model.gpuVramGb),
-    cpuLevel: model.cpuLevel === null ? "" : model.cpuLevel as ModelFormValues["cpuLevel"],
-    gpuLevel: model.gpuLevel === null ? "" : model.gpuLevel as ModelFormValues["gpuLevel"],
+    cpuLevel: model.cpuLevel ?? "",
+    gpuLevel: model.gpuLevel ?? "",
     price: String(model.price),
-    priceSourceUrl: model.priceSourceUrl ?? "",
-    priceCheckedOn: model.priceCheckedOn ?? "",
-    specificationsSource: model.specificationsSource ?? "",
   };
 }
 
@@ -137,6 +120,8 @@ export function LaptopModelFormScreen() {
   const [isLoading, setIsLoading] = useState(Boolean(modelId));
   const [isSaving, setIsSaving] = useState(false);
   const effectiveModelId = modelId ?? persistedModelId;
+  const selectedBrand = brands.find((brand) => String(brand.id) === values.brandId);
+  const isApple = /apple/i.test(selectedBrand?.name ?? "");
   const isEditing = effectiveModelId !== null;
 
   const pickModelImage = async () => {
@@ -220,19 +205,19 @@ export function LaptopModelFormScreen() {
       processorOrChip: form.processorOrChip,
       cpuCores: optionalNumber(form.cpuCores),
       cpuThreads: optionalNumber(form.cpuThreads),
-      unifiedMemoryGb: optionalNumber(form.unifiedMemoryGb),
+      unifiedMemoryGb: isApple ? optionalNumber(form.unifiedMemoryGb) : null,
       ramGb: optionalNumber(form.ramGb),
       storageGb: Number(form.storageGb),
       storageType: form.storageType,
       gpu: form.gpu.trim() || null,
       gpuType: form.gpuType || null,
       gpuVramGb: optionalNumber(form.gpuVramGb),
-      cpuLevel: form.cpuLevel || null,
-      gpuLevel: form.gpuLevel || null,
+      cpuLevel: form.cpuLevel,
+      gpuLevel: form.gpuLevel,
       price: Number(form.price),
-      priceSourceUrl: form.priceSourceUrl.trim() || null,
-      priceCheckedOn: form.priceCheckedOn.trim() || null,
-      specificationsSource: form.specificationsSource.trim() || null,
+      priceSourceUrl: model?.priceSourceUrl ?? null,
+      priceCheckedOn: model?.priceCheckedOn ?? null,
+      specificationsSource: model?.specificationsSource ?? null,
       imageUrl: model?.imageUrl ?? null,
       imageSourceUrl: model?.imageSourceUrl ?? null,
       imageTermsUrl: model?.imageTermsUrl ?? null,
@@ -365,8 +350,12 @@ export function LaptopModelFormScreen() {
           {errors.cpuThreads ? <Text style={{ color: colors.danger }}>{errors.cpuThreads}</Text> : null}
           <AdminField label="RAM en GB (opcional)" keyboardType="number-pad" value={values.ramGb} onChangeText={(value) => setField("ramGb", value)} />
           {errors.ramGb ? <Text style={{ color: colors.danger }}>{errors.ramGb}</Text> : null}
-          <AdminField label="Memoria unificada en GB (opcional)" keyboardType="number-pad" value={values.unifiedMemoryGb} onChangeText={(value) => setField("unifiedMemoryGb", value)} />
-          {errors.unifiedMemoryGb ? <Text style={{ color: colors.danger }}>{errors.unifiedMemoryGb}</Text> : null}
+          {isApple ? (
+            <>
+              <AdminField label="Memoria unificada en GB (opcional)" keyboardType="number-pad" value={values.unifiedMemoryGb} onChangeText={(value) => setField("unifiedMemoryGb", value)} />
+              {errors.unifiedMemoryGb ? <Text style={{ color: colors.danger }}>{errors.unifiedMemoryGb}</Text> : null}
+            </>
+          ) : null}
         </AdminCard>
 
         <AdminCard>
@@ -388,23 +377,20 @@ export function LaptopModelFormScreen() {
         </AdminCard>
 
         <AdminCard>
-          <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Precio y fuentes</Text>
+          <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Precio</Text>
           <AdminField label="Precio en MXN" keyboardType="decimal-pad" value={values.price} onChangeText={(value) => setField("price", value)} />
           {errors.price ? <Text style={{ color: colors.danger }}>{errors.price}</Text> : null}
-          <AdminField label="URL de la fuente del precio (opcional)" keyboardType="url" value={values.priceSourceUrl} onChangeText={(value) => setField("priceSourceUrl", value)} />
-          {errors.priceSourceUrl ? <Text style={{ color: colors.danger }}>{errors.priceSourceUrl}</Text> : null}
-          <AdminField label="Fecha de consulta (AAAA-MM-DD, opcional)" value={values.priceCheckedOn} onChangeText={(value) => setField("priceCheckedOn", value)} />
-          {errors.priceCheckedOn ? <Text style={{ color: colors.danger }}>{errors.priceCheckedOn}</Text> : null}
-          <AdminField label="Fuente de especificaciones (opcional)" multiline value={values.specificationsSource} onChangeText={(value) => setField("specificationsSource", value)} />
         </AdminCard>
 
         <AdminCard>
-          <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Niveles de referencia (opcionales)</Text>
+          <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Niveles de referencia</Text>
           <Text style={{ color: colors.muted, fontSize: 12 }}>Son referencias generales, no promesas de rendimiento.</Text>
           <Text style={{ color: colors.muted, fontSize: 12 }}>Nivel de CPU</Text>
-          <OptionRow values={["", "básico", "medio", "alto"]} selected={values.cpuLevel} onSelect={(value) => setField("cpuLevel", value as ModelFormValues["cpuLevel"])} />
+          <OptionRow values={levelOptions} selected={values.cpuLevel} onSelect={(value) => setField("cpuLevel", value)} />
+          {errors.cpuLevel ? <Text style={{ color: colors.danger }}>{errors.cpuLevel}</Text> : null}
           <Text style={{ color: colors.muted, fontSize: 12 }}>Nivel de GPU</Text>
-          <OptionRow values={["", "básico", "medio", "alto"]} selected={values.gpuLevel} onSelect={(value) => setField("gpuLevel", value as ModelFormValues["gpuLevel"])} />
+          <OptionRow values={levelOptions} selected={values.gpuLevel} onSelect={(value) => setField("gpuLevel", value)} />
+          {errors.gpuLevel ? <Text style={{ color: colors.danger }}>{errors.gpuLevel}</Text> : null}
         </AdminCard>
 
         <AdminCard>

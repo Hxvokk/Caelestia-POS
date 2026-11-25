@@ -70,10 +70,12 @@ export function BrandHeader({
   title,
   subtitle,
   action,
+  onBack,
 }: {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   action?: ReactNode;
+  onBack?: () => void;
 }) {
   return (
     <View style={styles.header}>
@@ -83,8 +85,18 @@ export function BrandHeader({
         <View style={styles.headerGlow} />
       </View>
       <View style={styles.brandRow}>
+        {onBack ? (
+          <Pressable
+            accessibilityLabel="Volver"
+            accessibilityRole="button"
+            onPress={onBack}
+            style={[styles.profileButton, styles.backButton]}
+          >
+            <Ionicons name="arrow-back" size={23} color={colors.surface} />
+          </Pressable>
+        ) : null}
         <CaelestiaBrand />
-        {action ?? (
+        {action !== undefined ? action : (
           <Pressable
             accessibilityLabel="Abrir perfil"
             accessibilityRole="button"
@@ -96,7 +108,7 @@ export function BrandHeader({
         )}
       </View>
       <Text style={styles.pageTitle}>{title}</Text>
-      <Text style={styles.pageSubtitle}>{subtitle}</Text>
+      {subtitle ? <Text style={styles.pageSubtitle}>{subtitle}</Text> : null}
     </View>
   );
 }
@@ -332,6 +344,7 @@ const styles = StyleSheet.create({
     borderRadius: 21,
     backgroundColor: "#FFFFFF24",
   },
+  backButton: { marginRight: spacing.sm },
   pageTitle: { marginTop: spacing.sm, color: colors.surface, fontSize: 30, fontWeight: "800" },
   pageSubtitle: { color: "#E7ECF7", fontSize: 15 },
   content: {
