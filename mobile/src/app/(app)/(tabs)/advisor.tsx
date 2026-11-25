@@ -1,3 +1,5 @@
 import { LaptopAdvisorScreen } from "../../../features/advisor/screens/LaptopAdvisorScreen";
 
-export default LaptopAdvisorScreen;
+export default function AdvisorTab() {
+  return <LaptopAdvisorScreen showBack={false} />;
+}

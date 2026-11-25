@@ -25,7 +25,7 @@ function parseOptionalPositiveInteger(value: string): number | null | undefined 
   return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
-export function LaptopAdvisorScreen() {
+export function LaptopAdvisorScreen({ showBack = true }: { showBack?: boolean } = {}) {
   const [budget, setBudget] = useState("");
   const [needs, setNeeds] = useState("");
   const [software, setSoftware] = useState("");
@@ -77,9 +77,11 @@ export function LaptopAdvisorScreen() {
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Pressable accessibilityRole="button" onPress={() => router.back()}>
-          <Text style={styles.back}>‹ Inventario</Text>
-        </Pressable>
+        {showBack ? (
+          <Pressable accessibilityRole="button" onPress={() => router.back()}>
+            <Text style={styles.back}>‹ Inventario</Text>
+          </Pressable>
+        ) : null}
         <View>
           <Text style={styles.eyebrow}>ASESOR DE LAPTOPS</Text>
           <Text style={styles.title}>Encuentra opciones</Text>

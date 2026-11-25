@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { supabase } from "../../../shared/auth/supabase";
 import { getCurrentUser } from "../../../shared/api/accountApi";
 import { getApiErrorMessage } from "../../../shared/api/client";
 import { getBrands, getLaptopModels, getLaptopUnits } from "../../../shared/api/inventoryApi";
@@ -68,7 +67,6 @@ export function ModelCatalogScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterError, setFilterError] = useState<string | null>(null);
-  const [accountEmail, setAccountEmail] = useState("");
 
   const loadCatalog = useCallback(async (filters: LaptopModelFilters = {}) => {
     setIsLoading(true);
@@ -92,11 +90,6 @@ export function ModelCatalogScreen() {
   useFocusEffect(
     useCallback(() => {
       void loadCatalog();
-      if (supabase) {
-        void supabase.auth.getUser().then(({ data }) => {
-          setAccountEmail(data.user?.email ?? "");
-        });
-      }
       void getCurrentUser()
         .then(setCurrentUser)
         .catch(() => setCurrentUser(null));
@@ -148,11 +141,6 @@ export function ModelCatalogScreen() {
     });
   };
 
-  const signOut = async () => {
-    if (!supabase) return;
-    await supabase.auth.signOut();
-  };
-
   if (isLoading && models.length === 0 && !error) {
     return <ScreenState loading title="Cargando catálogo" description="Consultando la API local." />;
   }
@@ -191,21 +179,7 @@ export function ModelCatalogScreen() {
             <View style={styles.topBar}>
               <View style={styles.titleGroup}>
                 <Text style={styles.eyebrow}>CAELESTIA POS</Text>
-                <Text style={styles.title}>Inventario</Text>
-                <Text numberOfLines={1} style={styles.account}>
-                  {accountEmail || "Sesión activa"}
-                </Text>
-              </View>
-              <View style={styles.accountActions}>
-                <Pressable
-                  accessibilityRole="button"
-                  onPress={() => router.push("/profile")}
-                >
-                  <Text style={styles.profileLink}>Mi perfil</Text>
-                </Pressable>
-                <Pressable accessibilityRole="button" onPress={() => void signOut()}>
-                  <Text style={styles.signOut}>Salir</Text>
-                </Pressable>
+                <Text style={styles.title}>Catálogo</Text>
               </View>
             </View>
 
@@ -232,22 +206,6 @@ export function ModelCatalogScreen() {
                 </Text>
               </View>
               <Text style={styles.cartButtonAction}>Ver carrito ›</Text>
-            </Pressable>
-
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => router.push("/sales")}
-              style={styles.historyButton}
-            >
-              <Text style={styles.historyButtonText}>Consultar historial de ventas ›</Text>
-            </Pressable>
-
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => router.push("/advisor")}
-              style={styles.historyButton}
-            >
-              <Text style={styles.historyButtonText}>Asesor de laptops ›</Text>
             </Pressable>
 
             <Text style={styles.sectionLabel}>Buscar modelo o marca</Text>

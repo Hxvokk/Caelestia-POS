@@ -22,7 +22,7 @@ function formatDate(date: string): string {
   }).format(new Date(date));
 }
 
-export function SalesHistoryScreen() {
+export function SalesHistoryScreen({ showBack = true }: { showBack?: boolean } = {}) {
   const [sales, setSales] = useState<SaleHistoryItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,9 +58,11 @@ export function SalesHistoryScreen() {
           />
         }
       >
-        <Pressable accessibilityRole="button" onPress={() => router.back()}>
-          <Text style={styles.back}>‹ Volver</Text>
-        </Pressable>
+        {showBack ? (
+          <Pressable accessibilityRole="button" onPress={() => router.back()}>
+            <Text style={styles.back}>‹ Volver</Text>
+          </Pressable>
+        ) : null}
         <View>
           <Text style={styles.eyebrow}>VENTAS</Text>
           <Text style={styles.title}>Historial</Text>

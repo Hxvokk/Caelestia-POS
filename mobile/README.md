@@ -12,7 +12,7 @@ React Native + Expo + TypeScript client following the project plan. Routes live 
 4. Start the API. For an Android Emulator, bind the local API to its host interface:
 
    ```sh
-   dotnet run --no-launch-profile --project ../api/Api.csproj --urls http://0.0.0.0:5141
+   ASPNETCORE_ENVIRONMENT=Development dotnet run --no-launch-profile --project ../api/Api.csproj --urls http://0.0.0.0:5141
    ```
 
    A physical device and the computer must share a trusted network; allow the API port only on that network.

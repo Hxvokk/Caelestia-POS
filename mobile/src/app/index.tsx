@@ -3,5 +3,5 @@ import { useSessionStore } from "../features/auth/store/sessionStore";
 
 export default function IndexRoute() {
   const session = useSessionStore((state) => state.session);
-  return <Redirect href={session ? "/inventory" : "/sign-in"} />;
+  return <Redirect href={session ? "/home" : "/sign-in"} />;
 }

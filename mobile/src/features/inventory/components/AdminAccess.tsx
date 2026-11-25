@@ -32,16 +32,20 @@ export function AdminGuard({ children }: { children: ReactNode }) {
 export function AdminPage({
   title,
   children,
+  showBack = true,
 }: {
   title: string;
   children: ReactNode;
+  showBack?: boolean;
 }) {
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.header}>
-        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.back}>
-          <Text style={styles.backText}>‹ Volver</Text>
-        </Pressable>
+        {showBack ? (
+          <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.back}>
+            <Text style={styles.backText}>‹ Volver</Text>
+          </Pressable>
+        ) : null}
         <Text style={styles.title}>{title}</Text>
       </View>
       <ScrollView

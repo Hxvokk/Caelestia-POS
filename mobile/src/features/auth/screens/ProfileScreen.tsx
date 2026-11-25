@@ -16,7 +16,7 @@ const passwordSchema = z.object({
   path: ["confirmPassword"],
 });
 
-export function ProfileScreen() {
+export function ProfileScreen({ showBack = true }: { showBack?: boolean } = {}) {
   const currentUser = useSessionStore((state) => state.currentUser);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -24,6 +24,7 @@ export function ProfileScreen() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const changePassword = async () => {
     if (!supabase) {
@@ -66,12 +67,34 @@ export function ProfileScreen() {
     }
   };
 
+  const signOut = async () => {
+    if (!supabase) {
+      setError("Falta configurar la conexión con Supabase.");
+      return;
+    }
+
+    setIsSigningOut(true);
+    setError(null);
+    try {
+      const { error: signOutError } = await supabase.auth.signOut({ scope: "local" });
+      if (signOutError) {
+        setError("No se pudo cerrar la sesión. Inténtalo de nuevo.");
+        setIsSigningOut(false);
+      }
+    } catch {
+      setError("No se pudo cerrar la sesión. Inténtalo de nuevo.");
+      setIsSigningOut(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.header}>
-        <Pressable accessibilityRole="button" onPress={() => router.back()}>
-          <Text style={styles.back}>‹ Volver</Text>
-        </Pressable>
+        {showBack ? (
+          <Pressable accessibilityRole="button" onPress={() => router.back()}>
+            <Text style={styles.back}>‹ Volver</Text>
+          </Pressable>
+        ) : null}
         <Text style={styles.title}>Mi perfil</Text>
         <Text style={styles.email}>
           {currentUser?.role === "administrador"
@@ -122,6 +145,16 @@ export function ProfileScreen() {
           </Text>
         </Pressable>
       </View>
+      <Pressable
+        accessibilityRole="button"
+        disabled={isSigningOut}
+        onPress={() => void signOut()}
+        style={[styles.signOutButton, isSigningOut && styles.disabledButton]}
+      >
+        <Text style={styles.signOutText}>
+          {isSigningOut ? "Cerrando sesión…" : "Cerrar sesión"}
+        </Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
@@ -193,4 +226,14 @@ const styles = StyleSheet.create({
   },
   disabledButton: { opacity: 0.6 },
   buttonText: { color: colors.surface, fontWeight: "700" },
+  signOutButton: {
+    minHeight: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.danger,
+    borderRadius: 10,
+  },
+  signOutText: { color: colors.danger, fontWeight: "700" },
 });
