@@ -1,71 +1,25 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { z } from "zod";
 import { supabase } from "../../../shared/auth/supabase";
 import { colors, spacing } from "../../../shared/config/theme";
+import { BrandHeader } from "../../inventory/components/HomeDashboardUI";
 import { useSessionStore } from "../store/sessionStore";
-
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, "Escribe tu contraseña actual."),
-  newPassword: z.string().min(8, "La nueva contraseña debe tener al menos 8 caracteres."),
-  confirmPassword: z.string().min(1, "Confirma la nueva contraseña."),
-}).refine((values) => values.newPassword === values.confirmPassword, {
-  message: "Las contraseñas nuevas no coinciden.",
-  path: ["confirmPassword"],
-});
 
 export function ProfileScreen({ showBack = true }: { showBack?: boolean } = {}) {
   const currentUser = useSessionStore((state) => state.currentUser);
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const email = useSessionStore((state) => state.session?.user.email);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  const changePassword = async () => {
-    if (!supabase) {
-      setError("Falta configurar la conexión con Supabase.");
-      return;
-    }
-
-    const result = passwordSchema.safeParse({
-      currentPassword,
-      newPassword,
-      confirmPassword,
-    });
-    if (!result.success) {
-      setError(result.error.issues[0]?.message ?? "Revisa los datos del formulario.");
-      setNotice(null);
-      return;
-    }
-
-    setIsSaving(true);
-    setError(null);
-    setNotice(null);
-    try {
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: result.data.newPassword,
-        current_password: result.data.currentPassword,
-      });
-      if (updateError) {
-        setError("No se pudo cambiar la contraseña. Revisa la contraseña actual e inténtalo otra vez.");
-        return;
-      }
-
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setNotice("La contraseña se actualizó correctamente.");
-    } catch {
-      setError("No se pudo conectar con Supabase. Inténtalo de nuevo.");
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  const roleLabel =
+    currentUser?.role === "administrador"
+      ? "Administrador"
+      : currentUser?.role === "vendedor"
+        ? "Vendedor"
+        : "Usuario autenticado";
 
   const signOut = async () => {
     if (!supabase) {
@@ -88,152 +42,150 @@ export function ProfileScreen({ showBack = true }: { showBack?: boolean } = {}) 
   };
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <View style={styles.header}>
-        {showBack ? (
-          <Pressable accessibilityRole="button" onPress={() => router.back()}>
-            <Text style={styles.back}>‹ Volver</Text>
-          </Pressable>
-        ) : null}
-        <Text style={styles.title}>Mi perfil</Text>
-        <Text style={styles.email}>
-          {currentUser?.role === "administrador"
-            ? "Administrador"
-            : currentUser?.role === "vendedor"
-              ? "Vendedor"
-              : "Usuario autenticado"}
-        </Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Cambiar contraseña</Text>
-        <Text style={styles.helper}>
-          Confirma tu contraseña actual y elige una nueva de al menos 8 caracteres.
-        </Text>
-
-        <PasswordField
-          label="Contraseña actual"
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-        />
-        <PasswordField
-          label="Nueva contraseña"
-          value={newPassword}
-          onChangeText={setNewPassword}
-        />
-        <PasswordField
-          label="Confirmar contraseña nueva"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-        />
-
-        {error ? (
-          <Text accessibilityRole="alert" style={styles.error}>{error}</Text>
-        ) : null}
-        {notice ? (
-          <Text accessibilityRole="status" style={styles.notice}>{notice}</Text>
-        ) : null}
-
-        <Pressable
-          accessibilityRole="button"
-          disabled={isSaving}
-          onPress={() => void changePassword()}
-          style={[styles.button, isSaving && styles.disabledButton]}
+    <SafeAreaView edges={["top"]} style={styles.screen}>
+      <BrandHeader
+        action={null}
+        onBack={showBack ? () => router.back() : undefined}
+        title="Perfil"
+      />
+      <View style={styles.body}>
+        <ScrollView
+          bounces={false}
+          contentContainerStyle={styles.content}
+          overScrollMode="never"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.buttonText}>
-            {isSaving ? "Actualizando…" : "Actualizar contraseña"}
-          </Text>
-        </Pressable>
+          <View style={styles.avatar}>
+            <Ionicons name="person" size={56} color={colors.primary} />
+          </View>
+          <Text style={styles.title}>Mi cuenta</Text>
+          <Text style={styles.subtitle}>Gestiona la información de tu cuenta en Caelestia POS.</Text>
+
+          <Text style={styles.sectionTitle}>Datos de la cuenta</Text>
+          <View style={styles.infoCard}>
+            {email ? (
+              <>
+                <View style={styles.infoRow}>
+                  <Ionicons name="mail-outline" size={26} color={colors.primary} />
+                  <View style={styles.infoCopy}>
+                    <Text style={styles.infoLabel}>Correo electrónico</Text>
+                    <Text style={styles.infoValue}>{email}</Text>
+                  </View>
+                </View>
+                <View style={styles.divider} />
+              </>
+            ) : null}
+            <View style={styles.infoRow}>
+              <Ionicons name="shield-checkmark-outline" size={26} color={colors.primary} />
+              <View style={styles.infoCopy}>
+                <Text style={styles.infoLabel}>Rol</Text>
+                <Text style={styles.infoValue}>{roleLabel}</Text>
+              </View>
+            </View>
+          </View>
+
+          <Text style={styles.sectionTitle}>Seguridad</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => router.push("/change-password")}
+            style={({ pressed }) => [styles.securityRow, pressed && styles.pressed]}
+          >
+            <Ionicons name="lock-closed-outline" size={26} color={colors.primary} />
+            <Text style={styles.securityText}>Cambiar contraseña</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.muted} />
+          </Pressable>
+        </ScrollView>
+
+        <View style={styles.footer}>
+          {error ? (
+            <Text accessibilityRole="alert" style={styles.error}>
+              {error}
+            </Text>
+          ) : null}
+          <Pressable
+            accessibilityRole="button"
+            disabled={isSigningOut}
+            onPress={() => void signOut()}
+            style={({ pressed }) => [
+              styles.signOutButton,
+              isSigningOut && styles.disabled,
+              pressed && styles.pressed,
+            ]}
+          >
+            <Ionicons name="log-out-outline" size={22} color={colors.danger} />
+            <Text style={styles.signOutText}>
+              {isSigningOut ? "Cerrando sesión…" : "Cerrar sesión"}
+            </Text>
+          </Pressable>
+        </View>
       </View>
-      <Pressable
-        accessibilityRole="button"
-        disabled={isSigningOut}
-        onPress={() => void signOut()}
-        style={[styles.signOutButton, isSigningOut && styles.disabledButton]}
-      >
-        <Text style={styles.signOutText}>
-          {isSigningOut ? "Cerrando sesión…" : "Cerrar sesión"}
-        </Text>
-      </Pressable>
     </SafeAreaView>
   );
 }
 
-function PasswordField({
-  label,
-  value,
-  onChangeText,
-}: {
-  label: string;
-  value: string;
-  onChangeText: (value: string) => void;
-}) {
-  return (
-    <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput
-        accessibilityLabel={label}
-        autoCapitalize="none"
-        autoComplete={label === "Contraseña actual" ? "current-password" : "new-password"}
-        onChangeText={onChangeText}
-        secureTextEntry
-        style={styles.input}
-        value={value}
-      />
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  screen: {
+  screen: { flex: 1, backgroundColor: colors.navy },
+  body: {
     flex: 1,
-    backgroundColor: colors.background,
-    padding: spacing.lg,
-  },
-  header: { marginBottom: spacing.lg },
-  back: { color: colors.primary, fontSize: 15, fontWeight: "700" },
-  title: { marginTop: spacing.md, color: colors.text, fontSize: 28, fontWeight: "800" },
-  email: { marginTop: spacing.xs, color: colors.muted, fontSize: 14 },
-  card: {
-    gap: spacing.md,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 14,
+    overflow: "hidden",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     backgroundColor: colors.surface,
   },
-  sectionTitle: { color: colors.text, fontSize: 18, fontWeight: "700" },
-  helper: { color: colors.muted, fontSize: 14, lineHeight: 20 },
-  field: { gap: spacing.xs },
-  label: { color: colors.text, fontSize: 13, fontWeight: "700" },
-  input: {
-    minHeight: 48,
+  content: { gap: spacing.sm, padding: spacing.lg, paddingBottom: spacing.sm },
+  avatar: {
+    alignSelf: "center",
+    width: 96,
+    height: 96,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 48,
+    backgroundColor: colors.blueBackground,
+  },
+  title: { color: colors.text, fontSize: 26, fontWeight: "800", textAlign: "center" },
+  subtitle: { color: colors.muted, fontSize: 15, lineHeight: 22, textAlign: "center" },
+  sectionTitle: { marginTop: spacing.sm, color: colors.text, fontSize: 18, fontWeight: "800" },
+  infoCard: {
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderRadius: 16,
+    backgroundColor: colors.blueBackground,
+  },
+  infoRow: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  infoCopy: { flex: 1, gap: 2 },
+  infoLabel: { color: colors.muted, fontSize: 13 },
+  infoValue: { color: colors.text, fontSize: 16, fontWeight: "800" },
+  divider: { height: 1, backgroundColor: colors.border },
+  securityRow: {
+    minHeight: 56,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
     paddingHorizontal: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 9,
-    color: colors.text,
-    fontSize: 16,
+    borderRadius: 14,
+    backgroundColor: colors.indigoBackground,
+  },
+  securityText: { flex: 1, color: colors.text, fontSize: 16, fontWeight: "800" },
+  footer: {
+    gap: spacing.xs,
+    padding: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    backgroundColor: colors.surface,
   },
   error: { color: colors.danger, fontSize: 13 },
-  notice: { color: colors.success, fontSize: 13 },
-  button: {
-    minHeight: 48,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
-    backgroundColor: colors.primary,
-  },
-  disabledButton: { opacity: 0.6 },
-  buttonText: { color: colors.surface, fontWeight: "700" },
   signOutButton: {
-    minHeight: 48,
+    minHeight: 52,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: spacing.md,
+    gap: spacing.sm,
     borderWidth: 1,
     borderColor: colors.danger,
-    borderRadius: 10,
+    borderRadius: 12,
+    backgroundColor: colors.dangerBackground,
   },
-  signOutText: { color: colors.danger, fontWeight: "700" },
+  signOutText: { color: colors.danger, fontSize: 16, fontWeight: "800" },
+  disabled: { opacity: 0.6 },
+  pressed: { opacity: 0.75 },
 });
